@@ -4,25 +4,29 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import jakarta.validation.constraints.Email;
+
+import com.ds.app.enums.CertificationStatus;
+import com.ds.app.enums.EmployeeExperience;
+import com.ds.app.enums.EmploymentType;
+import com.ds.app.enums.Gender;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
-import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -30,106 +34,114 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Employee extends AppUser{
+@EqualsAndHashCode(callSuper = true)
+public class Employee extends AppUser {
 	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
 	
-	@NotNull(message = "User ID is required")
-	@Column(nullable = false, unique = true)
-	private Integer userId;
 	
-	@NotNull(message = "Employee Code is Required")
-	@Size(min = 3, max = 20, message = "Employee Code musr be between 3 and 20 characters")
-	@Column(nullable = false, unique = true, length = 20)
 	private String employeeCode;
 	
-	@Column(nullable = false)
+	@Column(nullable = true, length = 50)
 	private String firstName;
 	
-	@Column(nullable = false)
+	@Column(nullable = true, length = 50)
 	private String lastName;
 	
-	@Column
-	private Long departmentId;
+	@Email(message = "Invalid email format")
 	
-	@Column
-	private Long companyId;
+	private String email;
 	
-	@Column
-	private Long projectId;
+	@Column(nullable = true, unique = true, length = 10)
+    private String phoneNumber;
 	
-	@NotNull(message = "Employee Type is required")
-	@Enumerated(EnumType.STRING)
-	 @Column(nullable = false, length = 20)
-    private EmployeeExperience employeeExperience;
 
-    @NotNull(message = "Certification status is required")
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private CertificationStatus certificationStatus;
-
-    @Column(nullable = false)
-    private Boolean trainingRequired = false;
-
-    @Column(nullable = false)
-    private Boolean isEscalated = false;
-
-    @NotNull(message = "Salary is required")
-    @PositiveOrZero(message = "Salary must be zero or greater")
-    @Column(nullable = false)
-    private Double salary;
-
-    @NotNull(message = "Joining date is required")
-    @PastOrPresent(message = "Joining date cannot be in the future")
-    @Column(nullable = false)
-    private LocalDate joiningDate;
-
-    @NotNull(message = "Employee status is required")
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private EmployeeStatus status;
+    @Column(nullable = true)
+    private LocalDate dateOfBirth;
     
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private EmployeeSkill employeeSkill;
+    @Column(nullable = true, length = 20)
+    private Gender gender;
 
-    @Size(max = 255, message = "Profile photo URL is too long")
-    @Column(length = 255)
-    private String profilePhotoUrl;
+   
+    private String department; // similar to bhawna
 
+    
+    private String designation; // similar to bhawna
+    
+   
+    @PastOrPresent(message = "Joining date cannot be in the future")
+    @Column(nullable = true)
+    private LocalDate joiningDate;
+
+    @Enumerated(EnumType.STRING)
+    private EmploymentType employmentType; // similar to saurabh
+        
+   
+    @Enumerated(EnumType.STRING)
+    private CertificationStatus certificationStatus; // similar to saurabh
+    
+    
+
+	@Enumerated(EnumType.STRING)
+    private EmployeeExperience employeeExperience; // similar to bhawna and saurabh
+	
+    @Column(length = 100)
+    private String certificationName;
+    
+    @Column(nullable = true, length = 255)
+    private String addressLine;
+
+    @Column(nullable = true, length = 100)
+    private String city;
+
+    @Column(nullable = true, length = 100)
+    private String state;
+
+    @Column(nullable = true, length = 100)
+    private String country;
+
+    @Column(nullable = true, length = 6)
+    private String pincode;
+    
+    
     @Column(nullable = false)
     private Boolean isDeleted = false;
+    
+  
 
     @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt; 
 
     @Column(nullable = false)
     private LocalDateTime updatedAt;
     
-    @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL)
-    private BankDetail bankDetail;
-    
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
-    private List<InvestmentDetail> investmentDetail;
+    @Column(nullable = false)
+    private Boolean isEscalated = false; // similar to bhawna
 
+    @Size(max = 255, message = "Profile photo URL is too long")
+    @Column(length = 255)
+    private String profilePhotoUrl;
+   
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-        applyBusinessRules();
+        this.updatedAt = LocalDateTime.now();;
     }
 
     @PreUpdate
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
-        applyBusinessRules();
     }
+    
+    // In Employee.java
+ 	@OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+ 	private List<EmployeeDocument> documents;
+ 	
+ 	@OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+ 	private List<EmployeeEducation> educations;
+ 	
+ 	@JsonIgnore
+ 	@OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch =FetchType.LAZY)
+ 	private List<EmployeeReward> rewards;
 
-    private void applyBusinessRules() {
-        this.trainingRequired =
-                this.certificationStatus == CertificationStatus.NON_CERTIFIED;
-    }
-	
 }// end class

@@ -1,0 +1,22 @@
+package com.ds.app.dto.request;
+
+import com.ds.app.enums.InvestmentType;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+
+public class LogInRequestDTO {
+	
+	 	@NotBlank(message = "Username is required")
+	    private String username;
+
+	    @NotBlank(message = "Password is required")
+	    private String password;
+
+}

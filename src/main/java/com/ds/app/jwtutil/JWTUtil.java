@@ -22,6 +22,15 @@ public class JWTUtil {
     	return extractClaim(token, claims->claims.getSubject());
     }
     
+    public Integer extractUserId(String token) {
+        return extractClaim(token, claims -> claims.get("userId", Integer.class));
+    }
+
+    public String extractRole(String token) {
+        return extractClaim(token, claims -> claims.get("role", String.class));
+    }
+
+    
     public Date extractExpiration(String token) {
     	return extractClaim(token, claims->claims.getExpiration());
     }
@@ -42,14 +51,17 @@ public class JWTUtil {
     	
     	return claimresolver.apply(cliams);
     }
-    
-    public String generateToken(String username) {
-        return Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
-                .signWith(key)
-                .compact();
+        
+        public String generateToken(String username, Long userId, String role) {
+            return Jwts.builder()
+                    .subject(username)
+                    .claim("userId", userId)
+                    .claim("role", role)
+                    .issuedAt(new Date())
+                    .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
+                    .signWith(key)
+                    .compact();
+        
     }
 
     public boolean validateToken(String token, String username) {

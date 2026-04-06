@@ -10,7 +10,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -35,12 +34,19 @@ public class SecurityConfig{
 		 http.cors(cors->cors.disable());
 		 
 	        http.authorizeHttpRequests(auth -> auth
+	        		
+	        		.requestMatchers(
+	        				"/swagger-ui/**",
+	        				"/v3/api-docs/**",
+	        				"swagger-ui.html").permitAll()
+	        		
 	                .requestMatchers("/finsecure/public/**").permitAll()
-	                .requestMatchers("/finsecure/admin/**").hasAuthority("Admin")
-	                .requestMatchers("/finsecure/hr/**").hasAuthority("HR")
-	                .requestMatchers("/finsecure/finance/**").hasAuthority("Finance")
-	                .requestMatchers("/finsecure/system/**").hasAuthority("System")
-	                .requestMatchers("/finsecure/employee/**").hasAuthority("Employee")
+	                .requestMatchers("/finsecure/admin/**").hasAnyAuthority("HR","ADMIN")
+	                .requestMatchers("/finsecure/hr/**").hasAnyAuthority("HR","ADMIN")
+	                .requestMatchers("/finsecure/finance/**").hasAuthority("FINANCE")
+	                .requestMatchers("/finsecure/system/**").hasAuthority("SYSTEM")
+	                .requestMatchers("/finsecure/employee/**").hasAuthority("EMPLOYEE")
+	                .anyRequest().authenticated()
 	        );
 
 	        http.sessionManagement(session ->

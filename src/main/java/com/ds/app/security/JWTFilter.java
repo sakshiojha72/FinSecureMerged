@@ -32,6 +32,13 @@ public class JWTFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
+    	
+    	String path = request.getServletPath();
+    	
+    	if(path.contains("swagger") || path.contains("api-docs")) {
+    		filterChain.doFilter(request, response);
+            return;
+    	}
 
         String header = request.getHeader("Authorization");
 
@@ -41,14 +48,27 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
         String token = header.substring(7);
-        System.err.println("Token in header : "+token);
+        
+        
+        System.out.println("Token: " + token);
+
         String username = jwtUtil.extractUsername(token);
+        System.out.println("Username: " + username);
+
+        Integer userId = jwtUtil.extractUserId(token);
+        System.out.println("UserId: " + userId);
+
+        String role = jwtUtil.extractRole(token);
+        System.out.println("Role: " + role);
+     
+        
 
         //checks if username is valid and authentication for current request is not set
         if (username != null &&
             SecurityContextHolder.getContext().getAuthentication() == null) {
 
             UserDetails userDetails = service.loadUserByUsername(username);
+            System.out.println("Authorities from DB: " + userDetails.getAuthorities());
 
             if (jwtUtil.validateToken(token, userDetails.getUsername())) {
 
@@ -64,7 +84,7 @@ public class JWTFilter extends OncePerRequestFilter {
                 .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-                System.out.println(userDetails.getAuthorities());
+                System.out.println("Authentication SET successfully");
             }
         }
         else {
@@ -73,4 +93,6 @@ public class JWTFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
+    
+    
 }
