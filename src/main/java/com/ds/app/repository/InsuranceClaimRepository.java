@@ -10,8 +10,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.ds.app.entity.ClaimStatus;
 import com.ds.app.entity.InsuranceClaim;
+import com.ds.app.enums.ClaimStatus;
 
 @Repository
 public interface InsuranceClaimRepository extends JpaRepository<InsuranceClaim, Long> {

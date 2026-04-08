@@ -1,11 +1,12 @@
 package com.ds.app.dto.response;
 
-import com.ds.app.entity.InsuranceStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import com.ds.app.enums.InsuranceStatus;
 
 @Data
 @NoArgsConstructor

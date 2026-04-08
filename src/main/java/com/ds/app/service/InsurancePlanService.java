@@ -12,7 +12,7 @@ import com.ds.app.dto.response.EmployeeInsuranceResponseDTO;
 import com.ds.app.dto.response.EmployeeTopUpResponseDTO;
 import com.ds.app.dto.response.InsurancePlanResponseDTO;
 import com.ds.app.dto.response.TopUpPlanResponseDTO;
-import com.ds.app.entity.ClaimStatus;
+import com.ds.app.enums.ClaimStatus;
 
 public interface InsurancePlanService {
 		

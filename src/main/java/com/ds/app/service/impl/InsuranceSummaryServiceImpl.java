@@ -12,7 +12,7 @@ import com.ds.app.dto.response.TopUpPlanResponseDTO;
 import com.ds.app.entity.Employee;
 import com.ds.app.entity.EmployeeInsurance;
 import com.ds.app.entity.EmployeeTopUp;
-import com.ds.app.entity.InsuranceStatus;
+import com.ds.app.enums.InsuranceStatus;
 import com.ds.app.repository.EmployeeInsuranceRepository;
 import com.ds.app.repository.EmployeeRepository;
 import com.ds.app.repository.EmployeeTopUpRepository;

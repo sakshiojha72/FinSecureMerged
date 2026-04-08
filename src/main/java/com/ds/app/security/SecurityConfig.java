@@ -42,7 +42,7 @@ public class SecurityConfig{
 				    	).permitAll()
 				    .requestMatchers("/finsecure/public/**").permitAll()
 				    .requestMatchers("/finsecure/admin/**").hasAuthority("ADMIN")
-				    .requestMatchers("/finsecure/hr/**").hasAuthority("HR")
+				    .requestMatchers("/finsecure/hr/**").hasAnyAuthority("HR","ADMIN","MANAGER","EMPLOYEE")
 				    .requestMatchers("/finsecure/finance/**").hasAuthority("FINANCE")
 				    .requestMatchers("/finsecure/system/**").hasAuthority("SYSTEM")
 				    .requestMatchers("/finsecure/employee/**").hasAuthority("EMPLOYEE")

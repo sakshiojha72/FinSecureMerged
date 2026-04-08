@@ -16,7 +16,7 @@ import com.ds.app.dto.response.InsurancePlanResponseDTO;
 import com.ds.app.entity.Employee;
 import com.ds.app.entity.EmployeeInsurance;
 import com.ds.app.entity.InsurancePlan;
-import com.ds.app.entity.InsuranceStatus;
+import com.ds.app.enums.InsuranceStatus;
 import com.ds.app.repository.EmployeeInsuranceRepository;
 import com.ds.app.repository.EmployeeRepository;
 import com.ds.app.repository.InsurancePlanRepository;

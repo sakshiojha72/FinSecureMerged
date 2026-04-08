@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.ds.app.entity.AppUser;
 import com.ds.app.entity.Employee;
-import com.ds.app.entity.UserRole;
+import com.ds.app.enums.UserRole;
 import com.ds.app.repository.iAppUserRepository;
 import com.ds.app.repository.EmployeeRepository;
 import com.ds.app.service.AppUserService;

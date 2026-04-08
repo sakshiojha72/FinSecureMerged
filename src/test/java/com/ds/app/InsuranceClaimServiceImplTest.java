@@ -4,6 +4,8 @@ import com.ds.app.dto.request.ClaimRequestDTO;
 import com.ds.app.dto.request.ClaimStatusUpdateDTO;
 import com.ds.app.dto.response.ClaimResponseDTO;
 import com.ds.app.entity.*;
+import com.ds.app.enums.ClaimStatus;
+import com.ds.app.enums.InsuranceStatus;
 import com.ds.app.repository.EmployeeInsuranceRepository;
 import com.ds.app.repository.EmployeeRepository;
 import com.ds.app.repository.InsuranceClaimRepository;

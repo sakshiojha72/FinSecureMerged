@@ -1,10 +1,11 @@
 package com.ds.app.dto.response;
 
-import com.ds.app.entity.ClaimStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
+
+import com.ds.app.enums.ClaimStatus;
 
 @Data
 @NoArgsConstructor

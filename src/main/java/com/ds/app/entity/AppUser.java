@@ -1,5 +1,7 @@
 package com.ds.app.entity;
 
+import com.ds.app.enums.UserRole;
+
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

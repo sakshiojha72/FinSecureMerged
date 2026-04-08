@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.ds.app.entity.EmployeeTopUp;
-import com.ds.app.entity.InsuranceStatus;
+import com.ds.app.enums.InsuranceStatus;
 
 @Repository
 public interface EmployeeTopUpRepository extends JpaRepository<EmployeeTopUp, Long>{

@@ -1,6 +1,7 @@
 package com.ds.app.dto.request;
 
-import com.ds.app.entity.ClaimStatus;
+import com.ds.app.enums.ClaimStatus;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

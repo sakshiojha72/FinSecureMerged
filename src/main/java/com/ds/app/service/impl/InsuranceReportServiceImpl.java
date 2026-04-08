@@ -2,9 +2,9 @@ package com.ds.app.service.impl;
 
 import com.ds.app.dto.response.ClaimResponseDTO;
 import com.ds.app.dto.response.EmployeeInsuranceResponseDTO;
-import com.ds.app.entity.ClaimStatus;
 import com.ds.app.entity.InsuranceClaim;
-import com.ds.app.entity.InsuranceStatus;
+import com.ds.app.enums.ClaimStatus;
+import com.ds.app.enums.InsuranceStatus;
 import com.ds.app.entity.EmployeeInsurance;
 import com.ds.app.repository.EmployeeInsuranceRepository;
 import com.ds.app.repository.InsuranceClaimRepository;

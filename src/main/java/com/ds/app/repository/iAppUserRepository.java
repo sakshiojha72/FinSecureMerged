@@ -11,4 +11,7 @@ import com.ds.app.entity.AppUser;
 public interface iAppUserRepository extends JpaRepository<AppUser,Integer>{
 
 	public Optional<AppUser> findByUsername(String username);
+
+
+	 boolean existsByUsername(String username);
 }

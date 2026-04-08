@@ -5,7 +5,7 @@ import java.util.List;
 import com.ds.app.dto.request.ClaimRequestDTO;
 import com.ds.app.dto.request.ClaimStatusUpdateDTO;
 import com.ds.app.dto.response.ClaimResponseDTO;
-import com.ds.app.entity.ClaimStatus;
+import com.ds.app.enums.ClaimStatus;
 
 public interface InsuranceClaimService {
     // employee raises a claim against their active insurance

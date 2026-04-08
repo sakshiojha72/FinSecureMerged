@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import com.ds.app.entity.EmployeeInsurance;
-import com.ds.app.entity.InsuranceStatus;
+import com.ds.app.enums.InsuranceStatus;
 
 @Repository
 public interface EmployeeInsuranceRepository extends JpaRepository<EmployeeInsurance, Long> {
