@@ -55,21 +55,6 @@ public class EmployeeSearchController {
 	        return ResponseEntity.ok(employeeSearchService.filterUsers(filter, pageable));
 	    }
 	   
-	   @GetMapping("/report/finance")
-	    @PreAuthorize("hasAnyAuthority('HR', 'ADMIN')")
-	    @Operation(
-	        summary = "Finance report — employees with bank & investment summary (HR / Admin)",
-	        description = "Returns profile + masked bank details + investment compliance. " +
-	                      "Bank/investment will be null until Finance module is integrated. " +
-	                      "Pagination: ?page=0&size=20&sort=lastName,asc"
-	    )
-	    public ResponseEntity<PagedResponseDTO<EmployeeFinanceViewDTO>> getFinanceReport(@ParameterObject
-	            @PageableDefault(page = 0, size = 20, sort = "createdAt", direction = Sort.Direction.DESC)
-	            Pageable pageable) {
-	        logger.info("Finance report requested — pageable: {}", pageable);
-	        return ResponseEntity.ok(employeeSearchService.getEmployeesWithFinanceDetails(pageable));
-	    }
-	   
 	   @GetMapping("/count")
 	    @PreAuthorize("hasAnyAuthority('HR', 'ADMIN')")
 	    @Operation(

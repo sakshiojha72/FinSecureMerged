@@ -88,7 +88,7 @@ public class EmployeeController {
         return ResponseEntity.ok(employeeCRUDService.updateOwnProfile(dto, userDetails.getUsername()));
     }
 	
-	
+	//finsecure/employee/profile/photo?file=Jpg
 	  @PostMapping(value = "/profile/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	    @PreAuthorize("hasAnyAuthority('EMPLOYEE')")
 	    @Operation(summary = "Upload profile photo",
@@ -96,7 +96,7 @@ public class EmployeeController {
 	                      "Use multipart/form-data with field name 'file'. " +
 	                      "Uploading again replaces the previous photo."
 	    )
-	    public ResponseEntity<ProfilePhotoResponseDTO> uploadProfilePhoto( @RequestParam("file") MultipartFile file, @AuthenticationPrincipal MyUserDetails userDetails) throws Exception {
+	    public ResponseEntity<ProfilePhotoResponseDTO> uploadProfilePhoto(@RequestParam("file") MultipartFile file, @AuthenticationPrincipal MyUserDetails userDetails) throws Exception {
 		  
 	        logger.info("Photo upload for: {}", userDetails.getUsername());
 	        return ResponseEntity.ok(employeePhotoService.uploadProfilePhoto(file, userDetails.getUsername()));

@@ -52,7 +52,7 @@ public class EmployeeDocumentServiceImpl implements EmployeeDocumentService {
            validateFile(file);
 
            // Check duplicate document type
-           if (documentRepo.existsByUserIdAndDocumentType( userId, dto.getDocumentType())) {
+           if (documentRepo.existsByEmployeeUserIdAndDocumentType( userId, dto.getDocumentType())) {
                throw new RuntimeException(dto.getDocumentType() + " already uploaded. Delete existing one first.");
            }
 
@@ -77,7 +77,7 @@ public class EmployeeDocumentServiceImpl implements EmployeeDocumentService {
        @Transactional(readOnly = true)
        public List<EmployeeDocumentResponseDTO> getMyDocuments(Long userId) {
            logger.info("Fetching documents for userId: {}", userId);
-           return documentRepo.findByUserId(userId)
+           return documentRepo.findByEmployeeUserId(userId)
                    .stream()
                    .map(d -> mapToResponse(d, false))
                    .toList();
@@ -89,7 +89,7 @@ public class EmployeeDocumentServiceImpl implements EmployeeDocumentService {
            logger.warn("Deleting documentId: {} for userId: {}", documentId, userId);
 
            EmployeeDocument document = documentRepo
-                   .findByDocumentIdAndUserId(documentId, userId)
+                   .findByDocumentIdAndEmployeeUserId(documentId, userId)
                    .orElseThrow(() -> new RuntimeException("Document not found: " + documentId));
 
            deleteFile(document.getDocumentUrl());
@@ -101,7 +101,7 @@ public class EmployeeDocumentServiceImpl implements EmployeeDocumentService {
        @Transactional(readOnly = true)
        public List<EmployeeDocumentResponseDTO> getDocumentsByUserId(Long userId) {
            logger.info("HR fetching documents for userId: {}", userId);
-           return documentRepo.findByUserId(userId)
+           return documentRepo.findByEmployeeUserId(userId)
                    .stream()
                    .map(d -> mapToResponse(d, true))
                    .toList();

@@ -20,7 +20,7 @@ import com.ds.app.enums.EmploymentType;
 @Repository
 public interface IEmployeeRepository extends JpaRepository<Employee, Long> {
 	
-	    // ── Single record lookups ──────────────────────────────────────────
+	    // ── Single record lookups
 
 	    // Used by: HR to fetch employee by userId after search
 	    Optional<Employee> findByUserId(Long userId);
@@ -31,8 +31,7 @@ public interface IEmployeeRepository extends JpaRepository<Employee, Long> {
 	    // Used by: HR module if looking up by employeeCode
 	    Employee findByEmployeeCode(String employeeCode);
 
-	    // ── Existence checks (used in service for validation) ──────────────
-
+	    // ── Existence checks (used in service for validation)
 	    // Used by: createEmployeeByHR — prevent duplicate userIds
 	    boolean existsByUserId(Long userId);
 

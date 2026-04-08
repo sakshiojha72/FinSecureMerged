@@ -9,10 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-
 import com.ds.app.dto.request.*;
 import com.ds.app.dto.response.*;
-import com.ds.app.dto.*;
 import com.ds.app.entity.AppUser;
 import com.ds.app.entity.Employee;
 import com.ds.app.entity.EmployeeDocument;
@@ -69,8 +67,7 @@ public class EmployeeCRUDServiceImpl implements EmployeeCRUDService {
         String employeeCode = null;
  
         if (dto.getRole() != UserRole.ADMIN && dto.getRole() != UserRole.SYSTEM) {
- 
-            // EMPLOYEE / HR / FINANCE — create Employee object
+
             if (dto.getRole() == UserRole.EMPLOYEE) {
                 if (dto.getDepartment() == null || dto.getDepartment().isBlank())
                     throw new RuntimeException("Department required for EMPLOYEE");
@@ -104,8 +101,7 @@ public class EmployeeCRUDServiceImpl implements EmployeeCRUDService {
             iEmployeeRepo.save(saved);
  
         } else {
- 
-            // ADMIN / SYSTEM — AppUser only
+
             AppUser appUser = new AppUser();
             appUser.setUsername(dto.getUsername());
             appUser.setPassword(passwordEncoder.encode(dto.getPassword()));
@@ -151,8 +147,7 @@ public class EmployeeCRUDServiceImpl implements EmployeeCRUDService {
 	 
 	        if (dto.getEmail() != null && !dto.getEmail().isBlank()) {
 	            if (employee.getEmail() == null || !dto.getEmail().equals(employee.getEmail()))
-	                if (iEmployeeRepo.existsByEmailAndUserIdNot(dto.getEmail(),
-	                        employee.getUserId()))
+	                if (iEmployeeRepo.existsByEmailAndUserIdNot(dto.getEmail(),employee.getUserId()))
 	                    throw new DuplicateEmailException(dto.getEmail());
 	            employee.setEmail(dto.getEmail());
 	        }
@@ -275,8 +270,7 @@ public class EmployeeCRUDServiceImpl implements EmployeeCRUDService {
 	    private void applyHrUpdates(Employee e, EmployeeHRUpdateDTO dto) throws EmployeeCodeAlreadyExistsException {
 	    	
 	        if (dto.getEmployeeCode() != null && !dto.getEmployeeCode().isBlank()) {
-	            if (iEmployeeRepo.existsByEmployeeCodeAndUserIdNot(
-	                    dto.getEmployeeCode(), e.getUserId()))
+	            if (iEmployeeRepo.existsByEmployeeCodeAndUserIdNot(dto.getEmployeeCode(), e.getUserId()))
 	                throw new EmployeeCodeAlreadyExistsException(dto.getEmployeeCode());
 	            e.setEmployeeCode(dto.getEmployeeCode());
 	        }
@@ -305,8 +299,6 @@ public class EmployeeCRUDServiceImpl implements EmployeeCRUDService {
 	                e.setCertificationName(dto.getCertificationName());
 	        }
 	    }
-	    
-	 // Checks if all required personal fields are filled
 	    private Boolean isProfileComplete(Employee e) {
 	        return e.getFirstName()   != null && !e.getFirstName().isBlank()
 	            && e.getLastName()    != null && !e.getLastName().isBlank()
@@ -333,14 +325,12 @@ public class EmployeeCRUDServiceImpl implements EmployeeCRUDService {
 			    if (Boolean.TRUE.equals(e.getIsDeleted()))
 			        throw new ProfileDeletedException(e.getUserId());
 
-			    // ── Full name ──────────────────────────────────────────────────
 			    String fullName = null;
 			    if (e.getFirstName() != null && e.getLastName() != null)
 			        fullName = e.getFirstName() + " " + e.getLastName();
 			    else if (e.getFirstName() != null)
 			        fullName = e.getFirstName();
 
-			    // ── Full address ───────────────────────────────────────────────
 			    String fullAddress = null;
 			    if (e.getAddressLine() != null && e.getCity() != null) {
 			        fullAddress = e.getAddressLine() + ", " +
@@ -350,7 +340,6 @@ public class EmployeeCRUDServiceImpl implements EmployeeCRUDService {
 			                      e.getCountry();
 			    }
 
-			    // ── Work duration ──────────────────────────────────────────────
 			    Long daysWorked   = null;
 			    Long monthsWorked = null;
 			    Long yearsWorked  = null;
@@ -360,8 +349,7 @@ public class EmployeeCRUDServiceImpl implements EmployeeCRUDService {
 			        monthsWorked = daysWorked / 30;
 			        yearsWorked  = daysWorked / 365;
 			    }
-
-			    // ── Missing fields ─────────────────────────────────────────────
+			    
 			    java.util.List<String> missingFields = new java.util.ArrayList<>();
 			    if (e.getFirstName()   == null) missingFields.add("firstName");
 			    if (e.getLastName()    == null) missingFields.add("lastName");
@@ -375,19 +363,17 @@ public class EmployeeCRUDServiceImpl implements EmployeeCRUDService {
 			    if (e.getCountry()     == null) missingFields.add("country");
 			    if (e.getPincode()     == null) missingFields.add("pincode");
 
-			    // Profile complete if no missing fields
+
 			    boolean isProfileComplete = missingFields.isEmpty();
 
 			    logger.info("Dashboard for userId: {} — complete: {}", e.getUserId(), isProfileComplete);
 
 			    return EmployeeDashboardDTO.builder()
-			            // Identity
+			            
 			            .userId(e.getUserId())
 			            .username(e.getUsername())
 			            .employeeCode(e.getEmployeeCode())
 			            .role(e.getRole())
-
-			            // Personal — unmasked (own data)
 			            .firstName(e.getFirstName())
 			            .lastName(e.getLastName())
 			            .fullName(fullName)
@@ -395,16 +381,12 @@ public class EmployeeCRUDServiceImpl implements EmployeeCRUDService {
 			            .phoneNumber(e.getPhoneNumber())
 			            .dateOfBirth(e.getDateOfBirth())
 			            .gender(e.getGender())
-
-			            // Address
 			            .addressLine(e.getAddressLine())
 			            .city(e.getCity())
 			            .state(e.getState())
 			            .country(e.getCountry())
 			            .pincode(e.getPincode())
 			            .fullAddress(fullAddress)
-
-			            // Professional
 			            .department(e.getDepartment())
 			            .designation(e.getDesignation())
 			            .joiningDate(e.getJoiningDate())
@@ -412,26 +394,16 @@ public class EmployeeCRUDServiceImpl implements EmployeeCRUDService {
 			            .employeeExperience(e.getEmployeeExperience())
 			            .certificationStatus(e.getCertificationStatus())
 			            .certificationName(e.getCertificationName())
-
-			            // Work duration
 			            .daysWorked(daysWorked)
 			            .monthsWorked(monthsWorked)
 			            .yearsWorked(yearsWorked)
-
-			            // Photo
 			            .profilePhotoUrl(e.getProfilePhotoUrl())
 			            .hasPhoto(e.getProfilePhotoUrl() != null)
-
-			            // Profile completion
 			            .isProfileComplete(isProfileComplete)
 			            .missingFields(missingFields)
-
-			            // Status
 			            .isAccountLocked(e.getIsAccountLocked())
 			            .isDeleted(e.getIsDeleted())
 			            .isEscalated(e.getIsEscalated())
-
-			            // Timestamps
 			            .createdAt(e.getCreatedAt())
 			            .updatedAt(e.getUpdatedAt())
 			            .build();
@@ -443,25 +415,20 @@ public class EmployeeCRUDServiceImpl implements EmployeeCRUDService {
 		public EmployeeExportDTO exportEmployeeProfile(Long userId) throws Exception {
 			
 		    logger.info("Exporting profile for userId: {}", userId);
-		 
-		    // Step 1 — Get employee profile (masked)
 		    Employee employee = iEmployeeRepo
 		            .findByUserIdAndIsDeletedFalse(userId)
 		            .orElseThrow(() -> new EmployeeNotFoundException(userId));
 		    EmployeeResponseDTO profile = mapToMaskedResponseDTO(employee);
-		 
-		    // Step 2 — Get education records
 		    List<EmployeeEducationResponseDTO> education = iEducationRepository
 		            .findByEmployeeUserIdOrderByPassingYearDesc(userId)
 		            .stream()
 		            .map(this::mapEducationToResponse)
 		            .toList();
-		 
-		    // Step 3 — Get documents (masked document numbers)
+
 		    List<EmployeeDocumentResponseDTO> documents = iemDocumentRepository
-		            .findByUserId(userId)
+		            .findByEmployeeUserId(userId)
 		            .stream()
-		            .map(d -> mapDocumentToResponse(d, true)) // masked
+		            .map(d -> mapDocumentToResponse(d, true)) 
 		            .toList();
 		 
 		    logger.info("Export complete for userId: {} — " + "education: {}, documents: {}", userId, education.size(), documents.size());
@@ -473,7 +440,6 @@ public class EmployeeCRUDServiceImpl implements EmployeeCRUDService {
 		            .build();
 		}
 		
-		// Education mapper
 		private EmployeeEducationResponseDTO mapEducationToResponse(EmployeeEducation e) {
 			
 		    return EmployeeEducationResponseDTO.builder()
@@ -491,7 +457,7 @@ public class EmployeeCRUDServiceImpl implements EmployeeCRUDService {
 		            .build();
 		}
 		 
-		// Document mapper — masked = true for HR view
+	
 		private EmployeeDocumentResponseDTO mapDocumentToResponse( EmployeeDocument d, boolean masked) {
 			
 		    return EmployeeDocumentResponseDTO.builder()

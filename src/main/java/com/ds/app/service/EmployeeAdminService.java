@@ -9,20 +9,10 @@ import com.ds.app.exception.EmployeeNotFoundException;
 
 public interface EmployeeAdminService {
 	
+	    void softDeleteEmployee(Long userId) throws Exception;
 	
-	
-
-    // HR / Admin
-	   
-    void softDeleteEmployee(Long userId) throws Exception;
-
- 
-    // View all locked employees
-//    PagedResponseDTO<EmployeeResponseDTO> findLockedEmployees(Pageable pageable);
+	    void restoreEmployee(Long userId) throws EmployeeNotFoundException;
+	    
+	    PagedResponseDTO<EmployeeResponseDTO> findDeletedEmployees(Pageable pageable);
     
- // Add this method
-    void restoreEmployee(Long userId) throws EmployeeNotFoundException;
-    
- // View all deleted employees
-    PagedResponseDTO<EmployeeResponseDTO> findDeletedEmployees(Pageable pageable);
-}
+}//endclass

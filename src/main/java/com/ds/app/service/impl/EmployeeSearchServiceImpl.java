@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import com.ds.app.dto.request.*;
 import com.ds.app.dto.response.*;
-import com.ds.app.dto.*;
 import com.ds.app.entity.Employee;
 import com.ds.app.enums.CertificationStatus;
 import com.ds.app.enums.EmployeeExperience;
@@ -25,7 +24,6 @@ import com.ds.app.jwtutil.MaskingUtil;
 import com.ds.app.repository.IEmployeeRepository;
 import com.ds.app.repository.iAppUserRepository;
 import com.ds.app.service.EmployeeSearchService;
-import com.ds.app.service.FinanceService;
 
 import jakarta.transaction.Transactional;
 
@@ -38,8 +36,6 @@ public class EmployeeSearchServiceImpl implements EmployeeSearchService {
 	@Autowired
 	iAppUserRepository appUserRepository;
 	
-	@Autowired
-	FinanceService financeService;
 	
 	@Autowired
 	PasswordEncoder passwordEncoder;
@@ -69,20 +65,7 @@ public class EmployeeSearchServiceImpl implements EmployeeSearchService {
         return PagedResponseDTO.of(data, page);
 	}
 
-	@Override
-	public PagedResponseDTO<EmployeeFinanceViewDTO> getEmployeesWithFinanceDetails(Pageable pageable) {
 
-        logger.info("Finance report requested");
- 
-        Page<Employee> page = iEmployeeRepo.findAllActiveEmployees(pageable);
- 
-        List<EmployeeFinanceViewDTO> data = page.getContent()
-                .stream()
-                .map(this::mapToFinanceViewDTO)
-                .toList();
- 
-        return PagedResponseDTO.of(data, page);
-	}
 
 	  private EmployeeResponseDTO mapToMaskedResponseDTO(Employee e) {
 	        EmployeeResponseDTO dto = new EmployeeResponseDTO();
@@ -132,27 +115,18 @@ public class EmployeeSearchServiceImpl implements EmployeeSearchService {
 		}
 	  
 	  
-	  private EmployeeFinanceViewDTO mapToFinanceViewDTO(Employee e) {
-	        return new EmployeeFinanceViewDTO(
-	                mapToMaskedResponseDTO(e),
-	                financeService.getBankByUserId(e.getUserId()),
-	                financeService.getInvestmentByUserId(e.getUserId())
-	        );
-	    }
 
 	  @Override
 	  public CountReportDTO getCountReport() {
 		  logger.info("Generating count report");
 		  
 	        CountReportDTO report = CountReportDTO.builder()
-	 
-	                // Overall
+	
 	                .totalActive(
 	                        iEmployeeRepo.countByIsDeletedFalse())
 	                .totalDeleted(
 	                        iEmployeeRepo.countByIsDeletedTrue())
 	 
-	                // Experience
 	                .totalFreshers(
 	                        iEmployeeRepo.countByEmployeeExperience(
 	                                EmployeeExperience.FRESHER))
@@ -160,7 +134,6 @@ public class EmployeeSearchServiceImpl implements EmployeeSearchService {
 	                        iEmployeeRepo.countByEmployeeExperience(
 	                                EmployeeExperience.EXPERIENCED))
 	 
-	                // Certification
 	                .totalCertified(
 	                        iEmployeeRepo.countByCertificationStatus(
 	                                CertificationStatus.CERTIFIED))
@@ -186,7 +159,6 @@ public class EmployeeSearchServiceImpl implements EmployeeSearchService {
 	  public PagedResponseDTO<EmployeeResponseDTO> getRecentlyJoined(int days, Pageable pageable) {
 		  logger.info("Fetching employees joined in last {} days", days);
 		  
-	        // Calculate start date
 	        LocalDate fromDate = LocalDate.now().minusDays(days);
 	        logger.info("Fetching employees joined since: {}", fromDate);
 	 
@@ -245,8 +217,7 @@ public class EmployeeSearchServiceImpl implements EmployeeSearchService {
 	   
 	      List<Object[]> results =
 	              iEmployeeRepo.countByMonthAndYear(year);
-	   
-	      // Build map of month → count from DB results
+	  
 	      Map<Integer, Long> monthCountMap = new HashMap<>();
 	      for (Object[] row : results) {
 	          int month = ((Number) row[0]).intValue();
@@ -254,8 +225,6 @@ public class EmployeeSearchServiceImpl implements EmployeeSearchService {
 	          monthCountMap.put(month, count);
 	      }
 	   
-	      // Build list for all 12 months
-	      // Months with no joinings show count = 0
 	      List<MonthlyStatDTO> stats = new ArrayList<>();
 	      String[] monthNames = {
 	          "January", "February", "March", "April",
@@ -277,11 +246,6 @@ public class EmployeeSearchServiceImpl implements EmployeeSearchService {
 	      return stats;
 	  }
 	   
-
-	  //   Returns how many employees joined each year.
-	  //   No year parameter needed — returns all years.
-	  //   Sorted by year DESC — most recent year first.
-	  //   HR uses this to see overall hiring trend.
 	  @Override
 	  @Transactional
 	  public List<YearlyStatDTO> getYearlyStats() {
