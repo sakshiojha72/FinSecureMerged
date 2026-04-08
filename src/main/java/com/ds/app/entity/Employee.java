@@ -1,16 +1,22 @@
 package com.ds.app.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
-import java.util.List;
-
 import com.ds.app.enums.CertificationStatus;
 import com.ds.app.enums.EmployeeExperience;
 import com.ds.app.enums.Status;
+import com.ds.app.enums.UserRole;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -22,17 +28,43 @@ import java.util.List;
 @Entity
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@PrimaryKeyJoinColumn(name="user_id")
+@PrimaryKeyJoinColumn(name = "user_id")
 public class Employee extends AppUser {
 
-	 private String employeeCode;  
-	    private String firstName;
-	    private String lastName;
-	    private String email;
-	
-	
+    @Column(unique = true)
+    private String employeeCode;
+
+    @Column(nullable = false)
+    private String firstName;
+
+    @Column(nullable = false)
+    private String lastName;
+
+    @Column(nullable = false)
+    private String email;
+
+    private Boolean isEscalated = Boolean.FALSE;
+
+    @Column(nullable = false)
+    private Double currentSalary = 0.0;
+
+    private LocalDate joiningDate;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status status = Status.ACTIVE; // ACTIVE / INACTIVE / TERMINATED
+
+    private Boolean isDeleted = Boolean.FALSE;
+
+    @Enumerated(EnumType.STRING)
+    private EmployeeExperience employeeExperience; // FRESHER / EXPERIENCED
+
+    @Enumerated(EnumType.STRING)
+    private CertificationStatus certificationStatus;
+
+   
+
     @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
     private List<EmployeeInsurance> insurances;
 
@@ -41,85 +73,84 @@ public class Employee extends AppUser {
 
     @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
     private List<InsuranceClaim> insuranceClaims;
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id")
-    @JsonIgnoreProperties({"employees", "departments", "projects",
-                            "hibernateLazyInitializer", "handler"})
+    @JsonIgnoreProperties({
+            "employees", "departments", "projects",
+            "hibernateLazyInitializer", "handler"
+    })
     private Company company;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id")
-    @JsonIgnoreProperties({"employees", "projects", "company",
-                            "hibernateLazyInitializer", "handler"})
+    @JsonIgnoreProperties({
+            "employees", "projects", "company",
+            "hibernateLazyInitializer", "handler"
+    })
     private Department department;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
-    @JsonIgnoreProperties({"assignedEmployees", "company", "department",
-                            "hibernateLazyInitializer", "handler"})
+    @JsonIgnoreProperties({
+            "assignedEmployees", "company", "department",
+            "hibernateLazyInitializer", "handler"
+    })
     private Project project;
-    
-    
 
-    @Enumerated(EnumType.STRING)
-    private EmployeeExperience employeeExperience;  // FRESHER / EXPERIENCED 
-    
-    
-    
-    @Enumerated(EnumType.STRING)
-    private CertificationStatus certificationStatus;
-    
-    
-  
-    private Boolean isEscalated = Boolean.FALSE;  
+   
+    @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private EmployeeBankAccount bankAccount;
 
-    
-    private Double currentSalary = 0.0;
-    private LocalDate joiningDate;
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<EmployeeInvestment> investments;
 
-    
-    
-    @Enumerated(EnumType.STRING)
-    private Status status=Status.ACTIVE;   // ACTIVE / INACTIVE / TERMINATED
-    
-    
-    
-    
-    private Boolean isDeleted = Boolean.FALSE;
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<EmployeeCard> cards;
 
-    //  @OneToMany back-references 
-    // cascade = MERGE only —  using ALL (would delete escalations if employee deleted)
-    // @JsonIgnore stops loop: Employee → Escalation.targetEmployee → Employee → ...
-    
-    
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<SalaryRecord> salaryRecords;
+
+    // cascade = MERGE only — avoid deleting escalation/appraisal history accidentally
     @OneToMany(mappedBy = "targetEmployee", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Escalation> escalations = new ArrayList<>();
-    
-    
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Appraisal> appraisals = new ArrayList<>();
-    
+
     
 
-    // convenience getters read plain IDs without loading the object
-    public Long getCompanyId()    { return company    != null ? company.getId()    : null; }
-    public Long getDepartmentId() { return department != null ? department.getId() : null; }
-    public Long getProjectId()    { return project    != null ? project.getId()    : null; }
+    public Long getCompanyId() {
+        return company != null ? company.getId() : null;
+    }
+
+    public Long getDepartmentId() {
+        return department != null ? department.getId() : null;
+    }
+
+    public Long getProjectId() {
+        return project != null ? project.getId() : null;
+    }
+
+   
+
+//    public Employee(String username,
+//                    String password,
+//                    Boolean isAccountLocked,
+//                    UserRole role,
+//                    String firstName,
+//                    String lastName,
+//                    String employeeCode) {
+//
+//        super(username, password, isAccountLocked, role);
+//        this.firstName = firstName;
+//        this.lastName = lastName;
+//        this.employeeCode = employeeCode;
+//    }
 }
-
-
-
-
-
-	
-	
-
-
-   
-
-   
-   

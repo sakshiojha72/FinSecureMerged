@@ -1,4 +1,4 @@
-package com.ds.app.service.impl;
+package com.ds.app.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
