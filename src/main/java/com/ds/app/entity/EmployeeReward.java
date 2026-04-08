@@ -44,7 +44,6 @@ public class EmployeeReward {
 	@Column(length = 50)
 	private RewardCategory rewardCategory;
 	
-	//Employee of the month - Marcg 2024
 	@Column(nullable = false, length = 200)
 	private String title;
 	
@@ -55,7 +54,7 @@ public class EmployeeReward {
 	private LocalDate rewardDate;
 	
 	@Column(nullable = false, length = 100)
-	private String givenBy; //who gave the award - HR username
+	private String givenBy; 
 	
 	@Column(nullable = false, updatable = false)
 	private LocalDateTime createdAt;
@@ -76,7 +75,6 @@ public class EmployeeReward {
 		this.updatedAt = LocalDateTime.now();
 	}
 	
-	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)
 	private Employee employee;

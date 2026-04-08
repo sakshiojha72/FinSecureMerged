@@ -55,12 +55,5 @@ public class EmployeeDocument {
         this.updatedAt = LocalDateTime.now();
     }
 
-
-
-
 }
 	
-/*POST /finsecure/employee/documents
-GET  /finsecure/employee/documents
-GET  /finsecure/hr/employee/{userId}/documents
- * */

@@ -35,13 +35,11 @@ public class EmployeeEducationServiceImpl implements EmployeeEducationService {
     public EmployeeEducationResponseDTO addEducation( EmployeeEducationRequestDTO dto, Long userId) throws Exception {
  
         logger.info("Adding education for userId: {}", userId);
- 
-        // Fetch Employee object — needed for @ManyToOne
         Employee employee = iEmployeeRepo.findByUserId(userId)
                 .orElseThrow(() -> new EmployeeNotFoundException(userId));
  
         EmployeeEducation education = new EmployeeEducation();
-        education.setEmployee(employee);          // set Employee object
+        education.setEmployee(employee);          
         education.setDegree(dto.getDegree());
         education.setInstitution(dto.getInstitution());
         education.setFieldOfStudy(dto.getFieldOfStudy());
@@ -55,14 +53,6 @@ public class EmployeeEducationServiceImpl implements EmployeeEducationService {
         return mapToResponse(saved);
     }
  
-    // ════════════════════════════════════════════════════════════════
-    // GET MY EDUCATION — Employee view
-    //
-    // WHAT IT DOES:
-    //   Returns all education records for logged in employee.
-    //   Sorted by passingYear DESC — most recent first.
-    //   userId comes from JWT token in controller.
-    // ════════════════════════════════════════════════════════════════
     @Override
     @Transactional(readOnly = true)
     public List<EmployeeEducationResponseDTO> getMyEducation(Long userId) {
@@ -74,28 +64,17 @@ public class EmployeeEducationServiceImpl implements EmployeeEducationService {
                 .map(this::mapToResponse)
                 .toList();
     }
- 
-    // ════════════════════════════════════════════════════════════════
-    // UPDATE EDUCATION
-    //
-    // WHAT IT DOES:
-    //   Employee updates one of their own education records.
-    //   Verifies the record belongs to logged in employee
-    //   using findByEduIdAndEmployeeUserId —
-    //   employee cannot edit another employee's record.
-    //   Partial update — only non-null fields are updated.
-    // ════════════════════════════════════════════════════════════════
+    
+    
     @Override
     public EmployeeEducationResponseDTO updateEducation(Integer eduId, EmployeeEducationRequestDTO dto, Long userId) {
  
         logger.info("Updating eduId: {} for userId: {}", eduId, userId);
- 
-        // Verify ownership
+
         EmployeeEducation education = educationRepo
                 .findByEduIdAndEmployeeUserId(eduId, userId)
                 .orElseThrow(() -> new RuntimeException( "Education record not found or " + "does not belong to you: " + eduId));
  
-        // Partial update — only apply non-null fields
         if (dto.getDegree() != null && !dto.getDegree().isBlank())
             education.setDegree(dto.getDegree());
         if (dto.getInstitution() != null && !dto.getInstitution().isBlank())
@@ -116,19 +95,10 @@ public class EmployeeEducationServiceImpl implements EmployeeEducationService {
         return mapToResponse(updated);
     }
  
-    // ════════════════════════════════════════════════════════════════
-    // DELETE EDUCATION
-    //
-    // WHAT IT DOES:
-    //   Employee permanently deletes their own education record.
-    //   Verifies ownership before deleting.
-    //   Hard delete — record permanently removed.
-    // ════════════════════════════════════════════════════════════════
     @Override
     public void deleteEducation(Integer eduId, Long userId) {
         logger.warn("Deleting eduId: {} for userId: {}",eduId, userId);
- 
-        // Verify ownership
+
         EmployeeEducation education = educationRepo
                 .findByEduIdAndEmployeeUserId(eduId, userId)
                 .orElseThrow(() -> new RuntimeException("Education record not found or " + "does not belong to you: " + eduId));
@@ -137,14 +107,7 @@ public class EmployeeEducationServiceImpl implements EmployeeEducationService {
         logger.info("Education deleted: eduId: {}", eduId);
     }
  
-    // ════════════════════════════════════════════════════════════════
-    // GET EDUCATION BY USERID — HR view
-    //
-    // WHAT IT DOES:
-    //   HR views any employee's education records by userId.
-    //   HR gets userId from search results first.
-    //   Sorted by passingYear DESC — most recent first.
-    // ════════════════════════════════════════════════════════════════
+
     @Override
     @Transactional
     public List<EmployeeEducationResponseDTO> getEducationByUserId( Long userId) {
@@ -157,7 +120,7 @@ public class EmployeeEducationServiceImpl implements EmployeeEducationService {
                 .toList();
     }
  
-    // ── Private mapper ─────────────────────────────────────────────
+
     private EmployeeEducationResponseDTO mapToResponse( EmployeeEducation e) {
     	
         return EmployeeEducationResponseDTO.builder()

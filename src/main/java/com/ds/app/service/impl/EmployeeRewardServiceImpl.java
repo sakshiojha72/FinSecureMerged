@@ -30,8 +30,6 @@ public class EmployeeRewardServiceImpl implements EmployeeRewardService {
 	@Autowired
 	IEmployeeRewardRepository employeeRewardRepo;
 	
-	//HR gives a reward to an employee, employee can receive many rewards over time
-	//fetches employee object for @manytoone, records HR username in givenBy field
 	@Override
 	public EmployeeRewardResponseDTO giveReward(Long userId, EmployeeRewardRequestDTO dto, String hrUsername) throws Exception {
 		
@@ -88,8 +86,6 @@ public class EmployeeRewardServiceImpl implements EmployeeRewardService {
 		
 	}
 	
-	//employee views all their own record
-	//sorted by rewardDate desc
 	@Override
 	@Transactional
 	public List<EmployeeRewardResponseDTO> getMyRewards(Long userId) {
@@ -104,8 +100,6 @@ public class EmployeeRewardServiceImpl implements EmployeeRewardService {
 		
 	}
 	
-	
-	//Hr view any employee's reward
 	@Override
 	@Transactional
 	public List<EmployeeRewardResponseDTO> getRewardsByUserId(Long userId) {

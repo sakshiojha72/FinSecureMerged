@@ -30,7 +30,7 @@ public class EmployeeDocumentServiceImpl implements EmployeeDocumentService {
 
     private static final Logger logger = LoggerFactory.getLogger(EmployeeDocumentServiceImpl.class);
 
-    private static final long MAX_SIZE = 5 * 1024 * 1024; // 5MB
+    private static final long MAX_SIZE = 5 * 1024 * 1024;
     
     private static final List<String> ALLOWED = List.of("image/jpeg", "image/png", "image/jpg", "application/pdf");
 
@@ -46,12 +46,9 @@ public class EmployeeDocumentServiceImpl implements EmployeeDocumentService {
 
            logger.info("Uploading {} for userId: {}", dto.getDocumentType(), userId);
 
-           // ── FIX: Fetch Employee object first ──────────────────────
            Employee employee = iEmployeeRepository.findByUserId(userId)
                    .orElseThrow(() -> new RuntimeException("Employee not found: " + userId));
            validateFile(file);
-
-           // Check duplicate document type
            if (documentRepo.existsByEmployeeUserIdAndDocumentType( userId, dto.getDocumentType())) {
                throw new RuntimeException(dto.getDocumentType() + " already uploaded. Delete existing one first.");
            }
@@ -60,8 +57,7 @@ public class EmployeeDocumentServiceImpl implements EmployeeDocumentService {
 
            EmployeeDocument document = new EmployeeDocument();
 
-           // ── FIX: Set Employee object not userId ───────────────────
-           document.setEmployee(employee);  // ← set Employee object
+           document.setEmployee(employee);  
            document.setDocumentType(dto.getDocumentType());
            document.setDocumentNumber(dto.getDocumentNumber());
            document.setDocumentUrl(filePath);
@@ -121,12 +117,9 @@ public class EmployeeDocumentServiceImpl implements EmployeeDocumentService {
            return mapToResponse(saved, false);
        }
 
-       // ── Private helpers ────────────────────────────────────────────
-
        private EmployeeDocumentResponseDTO mapToResponse( EmployeeDocument d, boolean masked) {
            return EmployeeDocumentResponseDTO.builder()
-                   .documentId(d.getDocumentId())
-                   // ── FIX: get userId from employee object ──────────
+                   .documentId(d.getDocumentId()) 
                    .userId(d.getEmployee().getUserId())         
                    .documentType(d.getDocumentType())
                    .documentNumber(

@@ -40,11 +40,10 @@ public class Employee extends AppUser {
 	
 	
 	private String employeeCode;
-	
-	@Column(nullable = true, length = 50)
+
 	private String firstName;
 	
-	@Column(nullable = true, length = 50)
+
 	private String lastName;
 	
 	@Email(message = "Invalid email format")
@@ -63,10 +62,10 @@ public class Employee extends AppUser {
     private Gender gender;
 
    
-    private String department; // similar to bhawna
+    private String department; 
 
     
-    private String designation; // similar to bhawna
+    private String designation; 
     
    
     @PastOrPresent(message = "Joining date cannot be in the future")
