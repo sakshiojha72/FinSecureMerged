@@ -16,6 +16,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,6 +32,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @PrimaryKeyJoinColumn(name = "user_id")
 @EqualsAndHashCode(
     callSuper = true,
@@ -65,6 +68,7 @@ import java.util.List;
         "appraisals"
     }
 )
+@Builder
 public class Employee extends AppUser {
 
     @Column(unique = true)
@@ -156,6 +160,41 @@ public class Employee extends AppUser {
     @OneToMany(mappedBy = "employee", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Appraisal> appraisals = new ArrayList<>();
+    
+
+    // Attendance & Timesheet
+    
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "manager_id")
+	@JsonIgnore
+	private Employee manager;
+	
+	@OneToMany(mappedBy = "manager", fetch = FetchType.LAZY)
+	private List<Employee> assignedEmployees;
+	
+	@OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
+	private List<Attendance> attendanceList;
+	
+	@OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
+	private List<Leave> leaves;
+	
+	@OneToMany(mappedBy = "approvedBy", fetch = FetchType.LAZY)
+	private List<Leave> approvedLeaves;
+	
+	@OneToMany(mappedBy = "employee", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+	private List<LeaveBalance> leaveBalances;
+	
+	@OneToMany(mappedBy = "employee", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+	private List<Timesheet> timesheets;
+	
+	@OneToMany(mappedBy = "approvedBy", fetch = FetchType.LAZY)
+	private List<Timesheet> approvedTimeSheets;
+	
+	@OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
+	private List<RegularizationRequest> regularizationRequests;
+	
+	@OneToMany(mappedBy = "approvedBy", fetch = FetchType.LAZY)
+	private List<RegularizationRequest> approvedRegularizations;
 
     /* ===================== Convenience Getters ===================== */
     public Long getCompanyId() {
