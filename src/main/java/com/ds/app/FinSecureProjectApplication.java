@@ -15,4 +15,5 @@ public class FinSecureProjectApplication {
 
 		SpringApplication.run(FinSecureProjectApplication.class, args);
 	}
+
 }

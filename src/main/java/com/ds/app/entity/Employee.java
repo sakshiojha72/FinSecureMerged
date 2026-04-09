@@ -3,6 +3,7 @@ package com.ds.app.entity;
 import com.ds.app.enums.CertificationStatus;
 import com.ds.app.enums.EmployeeExperience;
 import com.ds.app.enums.Status;
+import com.ds.app.enums.UserRole;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.CascadeType;
@@ -16,6 +17,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,8 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @PrimaryKeyJoinColumn(name = "user_id")
 @EqualsAndHashCode(
@@ -168,5 +169,21 @@ public class Employee extends AppUser {
 
     public Long getProjectId() {
         return project != null ? project.getId() : null;
+    }
+ // ADD THIS CONSTRUCTOR inside Employee class
+
+    public Employee(String username,
+                    String password,
+                    boolean isDeleted,
+                    UserRole role,
+                    String firstName,
+                    String lastName,
+                    String employeeCode) {
+
+        super(username, password, role);
+
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.employeeCode = employeeCode;
     }
 }
