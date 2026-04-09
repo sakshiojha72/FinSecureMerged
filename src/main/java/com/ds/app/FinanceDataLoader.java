@@ -382,6 +382,7 @@ public class FinanceDataLoader {
 						.build();
 				employeeInvestmentRepo.save(rahulEquity);
 				System.out.println("✅ EmployeeInvestment created — Rahul → Reliance (DIRECT_EQUITY, PENDING)");
+				
 			}
 
 			if (!employeeInvestmentRepo.existsByEmployee_UserIdAndMutualFund_MutualFundId(
@@ -419,7 +420,7 @@ public class FinanceDataLoader {
 				job1.setJobName("Salary Processing — Feb 2025");
 				job1.setTargetMonth(feb2025);
 				job1.setScheduledDateTime(LocalDateTime.of(2025, 2, 28, 10, 0));
-				job1.setJobStatus(JobStatus.COMPLETED);
+//				job1.setJobStatus(JobStatus.COMPLETED);
 //				job1.setTotalEmployees(2);   // only Rahul & Ashish have APPROVED bank accounts
 //				job1.setSuccessCount(2);
 //				job1.setFailureCount(0);
@@ -431,90 +432,10 @@ public class FinanceDataLoader {
 				EmployeeBankAccount rahulBank = employeeBankRepo.findByEmployee_UserId(rahul.getUserId()).orElseThrow();
 				EmployeeBankAccount ashishBank = employeeBankRepo.findByEmployee_UserId(ashish.getUserId()).orElseThrow();
 
-				// ── SalaryRecord — Rahul, Feb 2025 ───────────────────────────
-				double rahulGross = rahul.getCurrentSalary();          // 60000.0
-				double rahulDeductions = rahulGross * 0.10;            // 10% flat deduction
-				double rahulNet = rahulGross - rahulDeductions;
 
-				SalaryRecord rahulRecord = new SalaryRecord();
-				rahulRecord.setEmployee(rahul);
-				rahulRecord.setSalaryJob(job1);
-				rahulRecord.setSalaryMonth(feb2025);
-				rahulRecord.setGrossSalary(rahulGross);
-				rahulRecord.setDeductions(rahulDeductions);
-				rahulRecord.setNetSalary(rahulNet);
-				rahulRecord.setBankAccount(rahulBank);
-				rahulRecord.setPaymentStatus(PaymentStatus.CREDITED);
-				rahulRecord.setCreditedAt(LocalDateTime.of(2025, 2, 28, 11, 0));
-				salaryRecordRepo.save(rahulRecord);
-				System.out.println("✅ SalaryRecord created — Rahul, Feb 2025 (CREDITED)");
-
-				// ── SalaryRecord — ASHISH, Feb 2025 ──────────────────────────
-				double ashishGross = ashish.getCurrentSalary();        // 50000.0
-				double ashishDeductions = ashishGross * 0.10;
-				double ashishNet = ashishGross - ashishDeductions;
-
-				SalaryRecord ashishRecord = new SalaryRecord();
-				ashishRecord.setEmployee(ashish);
-				ashishRecord.setSalaryJob(job1);
-				ashishRecord.setSalaryMonth(feb2025);
-				ashishRecord.setGrossSalary(ashishGross);
-				ashishRecord.setDeductions(ashishDeductions);
-				ashishRecord.setNetSalary(ashishNet);
-				ashishRecord.setBankAccount(ashishBank);
-				ashishRecord.setPaymentStatus(PaymentStatus.CREDITED);
-				ashishRecord.setCreditedAt(LocalDateTime.of(2025, 2, 28, 11, 5));
-				salaryRecordRepo.save(ashishRecord);
-				System.out.println("✅ SalaryRecord created — ASHISH, Feb 2025 (CREDITED)");
 			}
 
-			
-			YearMonth mar2025 = YearMonth.of(2025, 3);
-			if (!salaryJobRepo.existsByTargetMonth(mar2025)) {
-
-				SalaryJob job2 = new SalaryJob();
-				job2.setJobName("Salary Processing — Mar 2025");
-				job2.setTargetMonth(mar2025);
-				job2.setScheduledDateTime(LocalDateTime.of(2025, 3, 31, 10, 0));
-				job2.setJobStatus(JobStatus.FAILED);
-				job2.setTotalEmployees(3);   // Rahul, Sneha, Ashish attempted
-				job2.setSuccessCount(2);
-				job2.setFailureCount(1);     // Sneha skipped — bank PENDING
-				job2.setCreatedBy(financeUser.getUserId());
-				job2 = salaryJobRepo.save(job2);
-				System.out.println("✅ SalaryJob created — Mar 2025 (PARTIALLY_FAILED)");
-
-				EmployeeBankAccount rahulBank = employeeBankRepo.findByEmployee_UserId(rahul.getUserId()).orElseThrow();
-				EmployeeBankAccount ashishBank = employeeBankRepo.findByEmployee_UserId(ashish.getUserId()).orElseThrow();
-
-				// Rahul — CREDITED
-				SalaryRecord r1 = new SalaryRecord();
-				r1.setEmployee(rahul);
-				r1.setSalaryJob(job2);
-				r1.setSalaryMonth(mar2025);
-				r1.setGrossSalary(rahul.getCurrentSalary());
-				r1.setDeductions(rahul.getCurrentSalary() * 0.10);
-				r1.setNetSalary(rahul.getCurrentSalary() * 0.90);
-				r1.setBankAccount(rahulBank);
-				r1.setPaymentStatus(PaymentStatus.CREDITED);
-				r1.setCreditedAt(LocalDateTime.of(2025, 3, 31, 11, 0));
-				salaryRecordRepo.save(r1);
-				System.out.println("✅ SalaryRecord created — Rahul, Mar 2025 (CREDITED)");
-
-				// Ashish — CREDITED
-				SalaryRecord r2 = new SalaryRecord();
-				r2.setEmployee(ashish);
-				r2.setSalaryJob(job2);
-				r2.setSalaryMonth(mar2025);
-				r2.setGrossSalary(ashish.getCurrentSalary());
-				r2.setDeductions(ashish.getCurrentSalary() * 0.10);
-				r2.setNetSalary(ashish.getCurrentSalary() * 0.90);
-				r2.setBankAccount(ashishBank);
-				r2.setPaymentStatus(PaymentStatus.CREDITED);
-				r2.setCreditedAt(LocalDateTime.of(2025, 3, 31, 11, 5));
-				salaryRecordRepo.save(r2);
-				System.out.println("✅ SalaryRecord created — ASHISH, Mar 2025 (CREDITED)");
-			}
+	
 		};
 	}
 }

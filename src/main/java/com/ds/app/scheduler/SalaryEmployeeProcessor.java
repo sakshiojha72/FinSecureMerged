@@ -127,7 +127,7 @@ public class SalaryEmployeeProcessor {
 
             try {
                 emailService.sendSalaryCreditEmail(
-                        employee.getUsername(),
+                        employee.getEmail(),
                         employee.getFirstName() + " " + employee.getLastName(),
                         job.getTargetMonth().toString(),
                         netSalary,
