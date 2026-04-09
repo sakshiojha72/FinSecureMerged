@@ -121,7 +121,7 @@ public class EmailServiceImpl implements EmailService {
                                               LocalDateTime coolDownPeriod) {
 
         send(toEmail,
-                "🚨 Suspicious Bank Account Activity Detected",
+                " Suspicious Bank Account Activity Detected",
                 "Employee ID: " + id + "\n"
                         + "Name: " + firstName + " " + lastName + "\n"
                         + "Changed bank account " + modifiedAttempted + " times in 24 hours.\n"
@@ -138,7 +138,7 @@ public class EmailServiceImpl implements EmailService {
                                              LocalDateTime coolDownPeriod) {
 
         send(toEmail,
-                "🚨 Fraud Monitoring Alert – Bank Account Change Activity",
+                " Fraud Monitoring Alert – Bank Account Change Activity",
                 "Fraud monitoring systems have detected unusual activity related to bank account modifications.\n\n"
                         + "Employee Details:\n"
                         + "Employee ID   : " + id + "\n"

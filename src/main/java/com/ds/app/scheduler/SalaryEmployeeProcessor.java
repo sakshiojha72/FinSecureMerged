@@ -23,7 +23,6 @@ import com.ds.app.repository.SalaryJobRepository;
 import com.ds.app.repository.SalaryProcessingLogRepository;
 import com.ds.app.repository.SalaryRecordRepository;
 import com.ds.app.service.EmailService;
-
 @Component
 public class SalaryEmployeeProcessor {
 
@@ -123,7 +122,7 @@ public class SalaryEmployeeProcessor {
             System.out.println("Saving success log...");
             saveLog(employee, job, SalaryProcessingStatus.SUCCESS, null,
                     "Salary of Rs." + netSalary + " credited successfully");
-            System.out.println("✅ Success log saved");
+            System.out.println(" Success log saved");
 
             try {
                 emailService.sendSalaryCreditEmail(
@@ -142,9 +141,9 @@ public class SalaryEmployeeProcessor {
             return "success";
 
         } catch (Exception e) {
-            System.out.println("❌ EXCEPTION for employee " + employee.getUserId());
-            System.out.println("❌ Message: " + e.getMessage());
-            System.out.println("❌ Cause: " + (e.getCause() != null ? e.getCause().getMessage() : "null"));
+            System.out.println(" EXCEPTION for employee " + employee.getUserId());
+            System.out.println(" Message: " + e.getMessage());
+            System.out.println(" Cause: " + (e.getCause() != null ? e.getCause().getMessage() : "null"));
             e.printStackTrace();
             throw e; // rethrow so outer catch counts it as failed
         }
@@ -161,7 +160,7 @@ public class SalaryEmployeeProcessor {
                 .skipReason(reason).details(details)
                 .build();
         processingLogRepository.save(log);
-        System.out.println("✅ Log saved");
+        System.out.println(" Log saved");
     }
 
     private String maskAccount(String accountNumber) {

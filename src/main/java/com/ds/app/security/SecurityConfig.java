@@ -41,12 +41,12 @@ public class SecurityConfig {
                         "/v3/api-docs/**"
                 ).permitAll()
                 .requestMatchers("/finsecure/public/**").permitAll()
-                .requestMatchers("/finsecure/admin/**").hasAuthority("ADMIN")
-                .requestMatchers("/finsecure/hr/**").hasAnyAuthority("HR", "ADMIN", "MANAGER", "EMPLOYEE")
-                .requestMatchers("/finsecure/finance/**").hasAuthority("FINANCE")
-                .requestMatchers("/finsecure/system/**").hasAuthority("SYSTEM")
-                .requestMatchers("/finsecure/employee/**").hasAuthority("EMPLOYEE")
-                .requestMatchers("/finsecure/insurance/**").hasAnyAuthority("EMPLOYEE", "ADMIN", "FINANCE", "HR")
+//                .requestMatchers("/finsecure/admin/**").hasAuthority("ADMIN")
+//                .requestMatchers("/finsecure/hr/**").hasAnyAuthority("HR", "ADMIN", "MANAGER", "EMPLOYEE")
+//                .requestMatchers("/finsecure/finance/**").hasAuthority("FINANCE")
+//                .requestMatchers("/finsecure/system/**").hasAuthority("SYSTEM")
+//                .requestMatchers("/finsecure/employee/**").hasAuthority("EMPLOYEE")
+//                .requestMatchers("/finsecure/insurance/**").hasAnyAuthority("EMPLOYEE", "ADMIN", "FINANCE", "HR")
                 .anyRequest().authenticated()
         );
 

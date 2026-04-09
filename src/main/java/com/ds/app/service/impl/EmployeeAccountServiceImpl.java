@@ -155,7 +155,7 @@ public class EmployeeAccountServiceImpl implements EmployeeAccountService {
 	        
 	        emailService.sendFraudAlertEmailToEmployee(
 	                "sharmayatin0882@gmail.com",
-	                "🚨 Suspicious Bank Account Activity Detected",
+	                " Suspicious Bank Account Activity Detected",
 	                employeeId ,  account.getEmployee().getFirstName(),
 	                account.getEmployee().getLastName(),account.getModifiedToday(),
 	                account.getCoolDownPeriod() 

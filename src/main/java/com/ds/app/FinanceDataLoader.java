@@ -29,7 +29,7 @@ public class FinanceDataLoader {
 			SalaryRecordRepository salaryRecordRepo) {
 
 		return args -> {
-
+			
 			// ── ADMIN ─────────────────────────────────────────────────────────
 			if (!userRepo.existsByUsername("admin")) {
 				AppUser admin = new AppUser();
@@ -37,7 +37,7 @@ public class FinanceDataLoader {
 				admin.setPassword(passwordEncoder.encode("admin123"));
 				admin.setRole(UserRole.ADMIN);
 				userRepo.save(admin);
-				System.out.println("✅ Admin created — admin / admin123");
+				System.out.println(" Admin created — admin / admin123");
 			}
 
 			// ── FINANCE ───────────────────────────────────────────────────────
@@ -53,7 +53,7 @@ public class FinanceDataLoader {
 				finance.setEmployeeCode("FIN001");
 				finance.setStatus(Status.ACTIVE);
 				employeeRepo.save(finance);
-				System.out.println("✅ Finance created — finance / finance123");
+				System.out.println(" Finance created — finance / finance123");
 			}
 
 			// ── HR ────────────────────────────────────────────────────────────
@@ -69,7 +69,7 @@ public class FinanceDataLoader {
 				hr.setEmployeeCode("HR001");
 				hr.setStatus(Status.ACTIVE);
 				employeeRepo.save(hr);
-				System.out.println("✅ HR created — hr / hr123");
+				System.out.println(" HR created — hr / hr123");
 			}
 
 			// ── EMPLOYEE 1 — RAHUL ────────────────────────────────────────────
@@ -86,7 +86,7 @@ public class FinanceDataLoader {
 				emp1.setEmployeeCode("EMP001");
 				emp1.setStatus(Status.ACTIVE);
 				rahul = employeeRepo.save(emp1);
-				System.out.println("✅ Employee 1 created — rahul / rahul123");
+				System.out.println(" Employee 1 created — rahul / rahul123");
 			} else {
 				rahul = employeeRepo.findByUsername("rahul").orElseThrow(); // ✅ FIXED
 			}
@@ -105,7 +105,7 @@ public class FinanceDataLoader {
 				emp2.setEmployeeCode("EMP002");
 				emp2.setStatus(Status.ACTIVE);
 				sneha = employeeRepo.save(emp2);
-				System.out.println("✅ Employee 2 created — sneha / sneha123");
+				System.out.println(" Employee 2 created — sneha / sneha123");
 			} else {
 				sneha = employeeRepo.findByUsername("sneha").orElseThrow(); // ✅ FIXED
 			}
@@ -123,7 +123,7 @@ public class FinanceDataLoader {
 				emp3.setEmployeeCode("EMP003");
 				emp3.setStatus(Status.INACTIVE);
 				employeeRepo.save(emp3);
-				System.out.println("✅ Inactive employee created — inactive_emp / inactive123");
+				System.out.println(" Inactive employee created — inactive_emp / inactive123");
 			}
 
 			// ── EMPLOYEE 4 — ASHISH ───────────────────────────────────────────
@@ -140,7 +140,7 @@ public class FinanceDataLoader {
 				emp4.setEmployeeCode("EMP004");
 				emp4.setStatus(Status.ACTIVE);
 				ashish = employeeRepo.save(emp4);
-				System.out.println("✅ Employee created — ASHISH / ASHISH123");
+				System.out.println(" Employee created — ASHISH / ASHISH123");
 			} else {
 				ashish = employeeRepo.findByUsername("ASHISH").orElseThrow(); // ✅ FIXED
 			}
@@ -158,7 +158,7 @@ public class FinanceDataLoader {
 				emp5.setEmployeeCode("EMP005");
 				emp5.setStatus(Status.ACTIVE);
 				employeeRepo.save(emp5);
-				System.out.println("✅ Employee created — Sakshi / Sakshi123");
+				System.out.println(" Employee created — Sakshi / Sakshi123");
 			}
 
 			// ── EMPLOYEE 6 — SHREYA ───────────────────────────────────────────
@@ -174,7 +174,7 @@ public class FinanceDataLoader {
 				emp6.setEmployeeCode("EMP006");
 				emp6.setStatus(Status.ACTIVE);
 				employeeRepo.save(emp6);
-				System.out.println("✅ Employee created — shreya / shreya123");
+				System.out.println(" Employee created — shreya / shreya123");
 			}
 
 			// ── FINANCE USER (for addedBy references) ─────────────────────────
@@ -186,10 +186,10 @@ public class FinanceDataLoader {
 				hdfc = new FinanceBankAccount();
 				hdfc.setBankName("HDFC Bank");
 				hdfc.setBankCode("HDFC");
-				hdfc.setStatus(BankStatus.WHITELISTED);
+				hdfc.setStatus(BankStatus.BLACKLISTED);
 				hdfc.setAddedBy(financeUser.getUserId());
 				hdfc = financeBankRepo.save(hdfc);
-				System.out.println("✅ FinanceBankAccount created — HDFC Bank");
+				System.out.println(" FinanceBankAccount created — HDFC Bank");
 			} else {
 				hdfc = financeBankRepo.findBybankCode("HDFC").orElseThrow();
 			}
@@ -202,7 +202,7 @@ public class FinanceDataLoader {
 				icici.setStatus(BankStatus.WHITELISTED);
 				icici.setAddedBy(financeUser.getUserId());
 				icici = financeBankRepo.save(icici);
-				System.out.println("✅ FinanceBankAccount created — ICICI Bank");
+				System.out.println(" FinanceBankAccount created — ICICI Bank");
 			} else {
 				icici = financeBankRepo.findBybankCode("ICICI").orElseThrow();
 			}
@@ -215,7 +215,7 @@ public class FinanceDataLoader {
 				sbi.setStatus(BankStatus.WHITELISTED);
 				sbi.setAddedBy(financeUser.getUserId());
 				sbi = financeBankRepo.save(sbi);
-				System.out.println("✅ FinanceBankAccount created — State Bank of India");
+				System.out.println(" FinanceBankAccount created — State Bank of India");
 			} else {
 				sbi = financeBankRepo.findBybankCode("SBI").orElseThrow();
 			}
@@ -231,7 +231,7 @@ public class FinanceDataLoader {
 						.addedBy(financeUser.getUserId())
 						.build();
 				nifty50 = financeInvestmentRepo.save(nifty50);
-				System.out.println("✅ FinanceInvestment created — Axis Nifty 50 Index Fund");
+				System.out.println(" FinanceInvestment created — Axis Nifty 50 Index Fund");
 			} else {
 				nifty50 = financeInvestmentRepo.findByFundCode("AXIS-N50").orElseThrow();
 			}
@@ -246,7 +246,7 @@ public class FinanceDataLoader {
 						.addedBy(financeUser.getUserId())
 						.build();
 				mirae = financeInvestmentRepo.save(mirae);
-				System.out.println("✅ FinanceInvestment created — Mirae Asset Large Cap Fund");
+				System.out.println(" FinanceInvestment created — Mirae Asset Large Cap Fund");
 			} else {
 				mirae = financeInvestmentRepo.findByFundCode("MIR-LC").orElseThrow();
 			}
@@ -261,7 +261,7 @@ public class FinanceDataLoader {
 						.addedBy(financeUser.getUserId())
 						.build();
 				ppfas = financeInvestmentRepo.save(ppfas);
-				System.out.println("✅ FinanceInvestment created — Parag Parikh Flexi Cap Fund");
+				System.out.println(" FinanceInvestment created — Parag Parikh Flexi Cap Fund");
 			} else {
 				ppfas = financeInvestmentRepo.findByFundCode("PPFAS-FLEX").orElseThrow();
 			}
@@ -279,7 +279,7 @@ public class FinanceDataLoader {
 						.modifiedToday(0)
 						.build();
 				employeeBankRepo.save(rahulBank);
-				System.out.println("✅ EmployeeBankAccount created — Rahul → HDFC");
+				System.out.println(" EmployeeBankAccount created — Rahul → HDFC");
 			}
 
 			if (!employeeBankRepo.existsByEmployee_UserId(sneha.getUserId())) {
@@ -293,7 +293,7 @@ public class FinanceDataLoader {
 						.modifiedToday(0)
 						.build();
 				employeeBankRepo.save(snehaBank);
-				System.out.println("✅ EmployeeBankAccount created — Sneha → ICICI (PENDING)");
+				System.out.println(" EmployeeBankAccount created — Sneha → ICICI (PENDING)");
 			}
 			
 
@@ -309,7 +309,7 @@ public class FinanceDataLoader {
 						.modifiedToday(0)
 						.build();
 				employeeBankRepo.save(ashishBank);
-				System.out.println("✅ EmployeeBankAccount created — ASHISH → SBI");
+				System.out.println(" EmployeeBankAccount created — ASHISH → SBI");
 			}
 
 			// ── EMPLOYEE CARDS ────────────────────────────────────────────────
@@ -324,7 +324,7 @@ public class FinanceDataLoader {
 						.issuedAt(LocalDate.of(2023, 6, 1))
 						.build();
 				employeeCardRepo.save(rahulDebit);
-				System.out.println("✅ EmployeeCard created — Rahul DEBIT");
+				System.out.println(" EmployeeCard created — Rahul DEBIT");
 			}
 
 			if (!employeeCardRepo.existsByEmployee_UserIdAndCardTypeAndCardStatus(
@@ -338,7 +338,7 @@ public class FinanceDataLoader {
 						.issuedAt(LocalDate.of(2022, 12, 15))
 						.build();
 				employeeCardRepo.save(rahulCredit);
-				System.out.println("✅ EmployeeCard created — Rahul CREDIT");
+				System.out.println(" EmployeeCard created — Rahul CREDIT");
 			}
 
 			if (!employeeCardRepo.existsByEmployee_UserIdAndCardTypeAndCardStatus(
@@ -352,7 +352,7 @@ public class FinanceDataLoader {
 						.issuedAt(LocalDate.of(2024, 3, 10))
 						.build();
 				employeeCardRepo.save(snehaDebit);
-				System.out.println("✅ EmployeeCard created — Sneha DEBIT");
+				System.out.println(" EmployeeCard created — Sneha DEBIT");
 			}
 
 			// ── EMPLOYEE INVESTMENTS ──────────────────────────────────────────
@@ -368,7 +368,7 @@ public class FinanceDataLoader {
 						.reviewedBy(financeUser.getUserId())
 						.build();
 				employeeInvestmentRepo.save(rahulMF);
-				System.out.println("✅ EmployeeInvestment created — Rahul → Axis Nifty 50 (MUTUAL_FUND)");
+				System.out.println(" EmployeeInvestment created — Rahul → Axis Nifty 50 (MUTUAL_FUND)");
 			}
 
 			if (!employeeInvestmentRepo.existsByEmployee_UserIdAndSecurityName(
@@ -381,7 +381,7 @@ public class FinanceDataLoader {
 						.complianceStatus(ComplianceStatus.PENDING_REVIEW)
 						.build();
 				employeeInvestmentRepo.save(rahulEquity);
-				System.out.println("✅ EmployeeInvestment created — Rahul → Reliance (DIRECT_EQUITY, PENDING)");
+				System.out.println(" EmployeeInvestment created — Rahul → Reliance (DIRECT_EQUITY, PENDING)");
 				
 			}
 
@@ -395,7 +395,7 @@ public class FinanceDataLoader {
 						.complianceStatus(ComplianceStatus.PENDING_REVIEW)
 						.build();
 				employeeInvestmentRepo.save(snehaMF);
-				System.out.println("✅ EmployeeInvestment created — Sneha → Mirae Large Cap (MUTUAL_FUND, PENDING)");
+				System.out.println(" EmployeeInvestment created — Sneha → Mirae Large Cap (MUTUAL_FUND, PENDING)");
 			}
 
 			if (!employeeInvestmentRepo.existsByEmployee_UserIdAndMutualFund_MutualFundId(
@@ -410,7 +410,7 @@ public class FinanceDataLoader {
 						.reviewedBy(financeUser.getUserId())
 						.build();
 				employeeInvestmentRepo.save(ashishMF);
-				System.out.println("✅ EmployeeInvestment created — ASHISH → Parag Parikh Flexi Cap (MUTUAL_FUND)");
+				System.out.println(" EmployeeInvestment created — ASHISH → Parag Parikh Flexi Cap (MUTUAL_FUND)");
 			}
 
 			YearMonth feb2025 = YearMonth.of(2025, 2);
