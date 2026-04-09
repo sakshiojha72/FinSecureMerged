@@ -3,10 +3,10 @@ package com.ds.app.entity;
 import com.ds.app.enums.CertificationStatus;
 import com.ds.app.enums.EmployeeExperience;
 import com.ds.app.enums.Status;
-<<<<<<< HEAD
-=======
+
+
 import com.ds.app.enums.UserRole;
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.CascadeType;
@@ -20,10 +20,10 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
-<<<<<<< HEAD
-=======
+
+
 import lombok.Data;
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,12 +35,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-<<<<<<< HEAD
+
 @Getter
 @Setter
-=======
+
 @Data
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
+
 @NoArgsConstructor
 @PrimaryKeyJoinColumn(name = "user_id")
 @EqualsAndHashCode(
@@ -89,11 +89,11 @@ public class Employee extends AppUser {
     private String lastName;
 
     @Column(nullable = false)
-<<<<<<< HEAD
-    private String email = "welcome@gmail.com";
-=======
-    private String email;
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
+
+    private String email ;
+
+  
+
 
     private Boolean isEscalated = Boolean.FALSE;
 
@@ -172,7 +172,7 @@ public class Employee extends AppUser {
     @OneToMany(mappedBy = "employee", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Appraisal> appraisals = new ArrayList<>();
-<<<<<<< HEAD
+
     
     
  // ------------- Changes made for Tarushi Start -------------------------------
@@ -217,16 +217,7 @@ public class Employee extends AppUser {
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-=======
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
+
 
     /* ===================== Convenience Getters ===================== */
     public Long getCompanyId() {
@@ -240,8 +231,9 @@ public class Employee extends AppUser {
     public Long getProjectId() {
         return project != null ? project.getId() : null;
     }
-<<<<<<< HEAD
-=======
+
+    
+    
  // ADD THIS CONSTRUCTOR inside Employee class
 
     public Employee(String username,
@@ -258,5 +250,5 @@ public class Employee extends AppUser {
         this.lastName = lastName;
         this.employeeCode = employeeCode;
     }
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
+
 }

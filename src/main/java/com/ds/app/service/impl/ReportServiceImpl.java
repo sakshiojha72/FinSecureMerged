@@ -1,5 +1,5 @@
 package com.ds.app.service.impl;
-
+ 
 import com.ds.app.dto.response.EmployeeInvestmentResponseDTO;
 import com.ds.app.dto.response.SalaryJobResponseDTO;
 import com.ds.app.dto.response.SalaryRecordResponseDTO;
@@ -9,54 +9,51 @@ import com.ds.app.enums.*;
 import com.ds.app.repository.*;
 import com.ds.app.service.EmployeeService;
 import com.ds.app.service.ReportService;
-
+ 
 import lombok.RequiredArgsConstructor;
-
+ 
 import java.time.YearMonth;
 import java.util.*;
 import java.util.stream.Collectors;
-
+ 
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
-
+ 
 @Service
 @RequiredArgsConstructor
 public class ReportServiceImpl implements ReportService {
-
+ 
     private final SalaryRecordRepository salaryRecordRepository;
     private final EmployeeInvestmentRepository investmentRepository;
     private final EmployeeBankAccountRepository bankAccountRepository;
     private final SalaryJobRepository salaryJobRepository;
     private final EmployeeRepository employeeRepository;
-
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-    // Report 1: Summary dashboard 
+ 
+ 
+    // Report 1: Summary dashboard
     // Returns key counts across the whole system
-=======
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
+ 
     private final iEmployeeRepository employeeRepo;
     private final iEscalationRepository escalationRepo;
     private final iCompanyRepository companyRepo;
     private final iDepartmentRepository deptRepo;
     private final EmployeeService employeeService;
-
+ 
     // ================= FINANCE =================
-
+ 
     @Override
     public Page<SalaryRecordResponseDTO> getSalaryRegister(String month, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("creditedAt").descending());
-
+ 
         if (month != null && !month.isBlank()) {
             YearMonth targetMonth = YearMonth.parse(month);
             return salaryRecordRepository.findBySalaryMonth(targetMonth, pageable)
                     .map(this::mapRecordToResponse);
         }
-
+ 
         return salaryRecordRepository.findAll(pageable).map(this::mapRecordToResponse);
     }
-
+ 
     @Override
     public Page<EmployeeInvestmentResponseDTO> getComplianceReport(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("declaredAt").descending());
@@ -64,7 +61,7 @@ public class ReportServiceImpl implements ReportService {
                 .findByComplianceStatus(ComplianceStatus.NON_COMPLIANT, pageable)
                 .map(this::mapInvestmentToResponse);
     }
-
+ 
     @Override
     public Map<String, Long> getBankAccountStatusReport() {
         Map<String, Long> report = new LinkedHashMap<>();
@@ -74,19 +71,16 @@ public class ReportServiceImpl implements ReportService {
         report.put("rejected", bankAccountRepository.countByValidationStatus(BankValidationStatus.REJECTED));
         return report;
     }
-
+ 
     @Override
     public Page<SalaryJobResponseDTO> getSalaryJobReport(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         return salaryJobRepository.findAll(pageable).map(this::mapJobToResponse);
     }
-
+ 
     // ================= HR =================
-
-<<<<<<< HEAD
-=======
->>>>>>> 460b80319683eda7f335758b4df8c84147c8d2fe
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
+ 
+ 
     @Override
     public Map<String, Long> getSummary() {
         Map<String, Long> summary = new LinkedHashMap<>();
@@ -97,15 +91,11 @@ public class ReportServiceImpl implements ReportService {
         summary.put("resolvedEscalations", escalationRepo.countByStatus(EscalationStatus.RESOLVED));
         return summary;
     }
-
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
+ 
+ 
     // Report 2: Count employees per company
     // Returns { "ICICI Bank": 12, "Citi": 8 }
-=======
->>>>>>> 460b80319683eda7f335758b4df8c84147c8d2fe
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
+ 
     @Override
     public Map<String, Long> countGroupByCompany() {
         List<Object[]> rows = employeeRepo.countGroupByCompany();
@@ -120,15 +110,11 @@ public class ReportServiceImpl implements ReportService {
         }
         return result;
     }
-
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-    // Report 3: Count employees per department 
+ 
+ 
+    // Report 3: Count employees per department
     // Returns { "Risk & Compliance": 5, "Tech": 10 }
-=======
->>>>>>> 460b80319683eda7f335758b4df8c84147c8d2fe
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
+ 
     @Override
     public Map<String, Long> countGroupByDepartment() {
         List<Object[]> rows = employeeRepo.countGroupByDepartment();
@@ -143,15 +129,11 @@ public class ReportServiceImpl implements ReportService {
         }
         return result;
     }
-
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-    //Report 4: Count employees per type 
+ 
+ 
+    //Report 4: Count employees per type
     // Returns { "FRESHER": 20, "EXPERIENCED": 15, "CERTIFIED": 8 }
-=======
->>>>>>> 460b80319683eda7f335758b4df8c84147c8d2fe
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
+ 
     @Override
     public Map<String, Long> countGroupByEmployeeType() {
         List<Object[]> rows = employeeRepo.countGroupByEmployeeType();
@@ -162,15 +144,11 @@ public class ReportServiceImpl implements ReportService {
         }
         return result;
     }
-
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-    //  Report 5: Count employees per status 
+ 
+ 
+    //  Report 5: Count employees per status
     // Returns { "ACTIVE": 40, "INACTIVE": 3, "TERMINATED": 1 }
-=======
->>>>>>> 460b80319683eda7f335758b4df8c84147c8d2fe
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
+ 
     @Override
     public Map<String, Long> countGroupByStatus() {
         List<Object[]> rows = employeeRepo.countGroupByStatus();
@@ -180,45 +158,31 @@ public class ReportServiceImpl implements ReportService {
         }
         return result;
     }
-
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
+ 
+ 
     //Report 6: Count in a specific company
-=======
->>>>>>> 460b80319683eda7f335758b4df8c84147c8d2fe
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
+ 
     @Override
     public long countByCompany(Long companyId) {
         return employeeService.countByCompany(companyId);
     }
-
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-    // Report 7: Count in a specific department 
-=======
->>>>>>> 460b80319683eda7f335758b4df8c84147c8d2fe
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
+ 
+ 
+    // Report 7: Count in a specific department
+ 
     @Override
     public long countByDepartment(Long deptId) {
         return employeeService.countByDepartment(deptId);
     }
-<<<<<<< HEAD
-
-=======
-<<<<<<< HEAD
+ 
     
     
     //Report 8: Company perspective business Report
-=======
-
->>>>>>> 460b80319683eda7f335758b4df8c84147c8d2fe
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
+ 
     @Override
     public Map<String, Map<String, List<String>>> getCompanyPerspectiveReport() {
         List<CompanyDetailDTO> data = employeeRepo.getDetailedCompanyReport();
-
+ 
         return data.stream().collect(Collectors.groupingBy(
                 CompanyDetailDTO::getCompanyName,
                 Collectors.groupingBy(
@@ -231,14 +195,14 @@ public class ReportServiceImpl implements ReportService {
                 )
         ));
     }
-
+ 
     // ================= MAPPERS =================
-
+ 
     private String maskAccount(String acc) {
         if (acc == null || acc.length() < 4) return "****";
         return "****" + acc.substring(acc.length() - 4);
     }
-
+ 
     private SalaryRecordResponseDTO mapRecordToResponse(SalaryRecord record) {
         SalaryRecordResponseDTO dto = new SalaryRecordResponseDTO();
         dto.setId(record.getId());
@@ -256,7 +220,7 @@ public class ReportServiceImpl implements ReportService {
         }
         return dto;
     }
-
+ 
     private EmployeeInvestmentResponseDTO mapInvestmentToResponse(EmployeeInvestment inv) {
         EmployeeInvestmentResponseDTO dto = new EmployeeInvestmentResponseDTO();
         dto.setEmpInvestmentId(inv.getEmpInvestmentId());
@@ -269,7 +233,7 @@ public class ReportServiceImpl implements ReportService {
         dto.setDeclaredAt(inv.getDeclaredAt());
         return dto;
     }
-
+ 
     private SalaryJobResponseDTO mapJobToResponse(SalaryJob job) {
         SalaryJobResponseDTO dto = new SalaryJobResponseDTO();
         dto.setId(job.getId());

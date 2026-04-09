@@ -37,10 +37,8 @@ public class DepartmentServiceImpl  implements DepartmentService{
     }
 
     //create
-<<<<<<< HEAD
-=======
+
     @Override
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     public DepartmentResponseDTO create(DepartmentRequestDTO req) {
         Company company = companyService.findOrThrow(req.getCompanyId());
         if (departmentRepo.existsByCodeAndCompany(req.getCode(), company))
@@ -55,10 +53,8 @@ public class DepartmentServiceImpl  implements DepartmentService{
     }
 
     // update
-<<<<<<< HEAD
-=======
+
     @Override
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     public DepartmentResponseDTO update(Long id, DepartmentRequestDTO req) {
         Department dept = findOrThrow(id);
         if (req.getName()      != null) dept.setName(req.getName());
@@ -69,29 +65,24 @@ public class DepartmentServiceImpl  implements DepartmentService{
     }
 
     //--- get all---------------------
-<<<<<<< HEAD
-=======
+
     @Override
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     public List<DepartmentResponseDTO> getAll() {
         return departmentRepo.findAll().stream()
                 .map(this::toResponse).collect(Collectors.toList());
     }
 
     //--- get by id--------------------
-<<<<<<< HEAD
-=======
+
     @Override
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
+
     public DepartmentResponseDTO getById(Long id) {
         return toResponse(findOrThrow(id));
     }
 
     //--- get by company-----------------
-<<<<<<< HEAD
-=======
+
     @Override
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     public List<DepartmentResponseDTO> getByCompany(Long companyId) {
         return departmentRepo.findByCompany(companyService.findOrThrow(companyId))
                 .stream().map(this::toResponse).collect(Collectors.toList());
@@ -99,10 +90,8 @@ public class DepartmentServiceImpl  implements DepartmentService{
     
     
     //update status (ACTIVE/INACTIVE)
-<<<<<<< HEAD
-=======
+
     @Override
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     public DepartmentResponseDTO updateStatus(Long id, String status) {
         if (!status.equals("ACTIVE") && !status.equals("INACTIVE"))
             throw new HrException("Status must be ACTIVE or INACTIVE");
@@ -114,14 +103,10 @@ public class DepartmentServiceImpl  implements DepartmentService{
    
 
 
-<<<<<<< HEAD
+
 
     //--- internal helper-----------------------
-=======
     @Override
-    //--- internal helper-----------------------
-    @Override
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     public Department findOrThrow(Long id) {
         return departmentRepo.findById(id)
                 .orElseThrow(() -> new HrResourceNotFoundException("Department " , id));

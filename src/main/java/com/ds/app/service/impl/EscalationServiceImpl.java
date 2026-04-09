@@ -34,11 +34,9 @@ public class EscalationServiceImpl implements EscalationService {
     @Autowired private EmployeeService employeeService;
     @Autowired private EmailService emailService;
    
-<<<<<<< HEAD
 
-=======
     @Override
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
+
     public EscalationResponseDTO raise(EscalationRequestDTO req,
                                        Long raisedByUserId, String role) {
 
@@ -82,10 +80,8 @@ public class EscalationServiceImpl implements EscalationService {
     }
 
     // HR / Admin / Manager — full escalation list, paginated
-<<<<<<< HEAD
-=======
+
     @Override
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     public Map<String, Object> getAll(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("raisedAt").descending());
         Page<Escalation> result = escalationRepo.findAll(pageable);
@@ -93,10 +89,9 @@ public class EscalationServiceImpl implements EscalationService {
     }
 
     // get escalations for one employee — role decides what is returned
-<<<<<<< HEAD
-=======
+
     @Override
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
+
     public Map<String, Object> getForEmployee(Long targetUserId, String role, int page, int size) {
         Employee target = employeeService.findOrThrow(targetUserId);
         Pageable pageable = PageRequest.of(page, size, Sort.by("raisedAt").descending());
@@ -121,10 +116,9 @@ public class EscalationServiceImpl implements EscalationService {
     }
 
     // update status: OPEN → IN_PROGRESS → RESOLVED
-<<<<<<< HEAD
-=======
+
     @Override
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
+
     public EscalationResponseDTO updateStatus(Long escalationId, String newStatus) {
         Escalation esc = escalationRepo.findById(escalationId)
                 .orElseThrow(() -> new HrResourceNotFoundException("Escalation" , escalationId));
@@ -155,10 +149,7 @@ public class EscalationServiceImpl implements EscalationService {
     }
 
     // entity ->response dto
-<<<<<<< HEAD
-=======
-    
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
+
     private EscalationResponseDTO toResponse(Escalation esc) {
         EscalationResponseDTO res = new EscalationResponseDTO();
         res.setId(esc.getId());

@@ -22,10 +22,7 @@ public class CompanyServiceImpl implements CompanyService {
     @Autowired private iCompanyRepository companyRepo;
 
     //  entity → response DTO---------
-<<<<<<< HEAD
-=======
-    
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
+
     public CompanyResponseDTO toResponse(Company c) {
         CompanyResponseDTO res = new CompanyResponseDTO();
         res.setId(c.getId());
@@ -37,10 +34,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     // -- create-------------------
-<<<<<<< HEAD
-=======
     @Override
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     public CompanyResponseDTO create(CompanyRequestDTO req) {
         if (companyRepo.existsByCode(req.getCode()))
             throw new HrDuplicateResourceException("Company","Code",req.getCode());
@@ -56,10 +50,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     //update-----------------
-<<<<<<< HEAD
-=======
     @Override
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     public CompanyResponseDTO update(Long id, CompanyRequestDTO req) {
         Company company = findOrThrow(id);
         if (req.getName()               != null) company.setName(req.getName());
@@ -70,10 +61,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     // ---- get all ---------------------
-<<<<<<< HEAD
-=======
     @Override
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     public List<CompanyResponseDTO> getAll() {
         return companyRepo.findAll().stream()
                 .map(this::toResponse)
@@ -81,20 +69,14 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     // ---- get by id -----------------------
-<<<<<<< HEAD
-=======
     @Override
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     public CompanyResponseDTO getById(Long id) {
         return toResponse(findOrThrow(id));
     }
 
     
     //update status-------------------------------
-<<<<<<< HEAD
-=======
     @Override
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     public CompanyResponseDTO updateStatus(Long id, String status) {
         if (!status.equals("ACTIVE") && !status.equals("INACTIVE"))
             throw new HrException("Status must be ACTIVE or INACTIVE");
@@ -104,14 +86,9 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     // ---- internal helper — returns raw entity for other services ------------─
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-    
-=======
->>>>>>> 460b80319683eda7f335758b4df8c84147c8d2fe
+
     @Override
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
+
     public Company findOrThrow(Long id) {
         return companyRepo.findById(id)
                 .orElseThrow(() -> new HrResourceNotFoundException("Company " , id));

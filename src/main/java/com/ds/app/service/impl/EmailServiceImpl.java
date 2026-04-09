@@ -12,25 +12,12 @@ import com.ds.app.service.EmailService;
 
 @Service
 @Async
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
+
 public class EmailServiceImpl implements EmailService{
 
     @Autowired private JavaMailSender mailSender;
-    
-=======
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
-public class EmailServiceImpl implements EmailService {
 
-    @Autowired
-    private JavaMailSender mailSender;
-<<<<<<< HEAD
 
-=======
->>>>>>> 460b80319683eda7f335758b4df8c84147c8d2fe
-    
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     private void send(String to, String subject, String body) {
         SimpleMailMessage msg = new SimpleMailMessage();
         msg.setTo(to);
@@ -39,22 +26,12 @@ public class EmailServiceImpl implements EmailService {
         msg.setFrom("sharmayatin0882@gmail.com");
         mailSender.send(msg);
     }
-<<<<<<< HEAD
+
+
 
     @Override
     public void sendAllocationEmail(String to, String name, String company, String dept, String project) {
-=======
-<<<<<<< HEAD
-    
-    @Override
-    public void sendAllocationEmail(String to, String name,
-                                     String company, String dept, String project) {
-=======
 
-    @Override
-    public void sendAllocationEmail(String to, String name, String company, String dept, String project) {
->>>>>>> 460b80319683eda7f335758b4df8c84147c8d2fe
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
         send(to, "FinSecure — You have been assigned",
                 "Dear " + name + ",\n\n"
                         + "You have been assigned to:\n"
@@ -63,14 +40,7 @@ public class EmailServiceImpl implements EmailService {
                         + "  Project    : " + (project != null ? project : "Not assigned yet") + "\n\n"
                         + "Regards,\nFinSecure HR Team");
     }
-<<<<<<< HEAD
 
-=======
-<<<<<<< HEAD
-=======
-
->>>>>>> 460b80319683eda7f335758b4df8c84147c8d2fe
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     @Override
     public void sendDeallocationEmail(String to, String name, String type) {
         send(to, "FinSecure — Allocation Update",
@@ -88,15 +58,7 @@ public class EmailServiceImpl implements EmailService {
                         + "Please log in to your dashboard for details.\n\n"
                         + "Regards,\nFinSecure HR Team");
     }
-<<<<<<< HEAD
 
-=======
-<<<<<<< HEAD
-    
-=======
-
->>>>>>> 460b80319683eda7f335758b4df8c84147c8d2fe
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     @Override
     public void sendAppraisalEmail(String to, String name, Double newSalary) {
         send(to, "FinSecure — Salary Appraisal Completed",
@@ -105,16 +67,7 @@ public class EmailServiceImpl implements EmailService {
                         + "Updated salary: " + newSalary + "\n\n"
                         + "Regards,\nFinSecure HR Team");
     }
-<<<<<<< HEAD
 
-=======
-<<<<<<< HEAD
-    
-    
-=======
-
->>>>>>> 460b80319683eda7f335758b4df8c84147c8d2fe
->>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     @Override
     public void sendStaleEscalationAlert(String to, Long escalationId,
                                          String targetName, String targetEmail,
