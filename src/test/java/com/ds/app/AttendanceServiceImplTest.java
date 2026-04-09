@@ -6,7 +6,7 @@ import com.ds.app.entity.Attendance;
 import com.ds.app.entity.Employee;
 import com.ds.app.enums.AttendanceStatus;
 import com.ds.app.exception.ForbiddenException;
-import com.ds.app.exception.ResourceNotFoundException;
+import com.ds.app.exception.ResourceNotFoundException2;
 import com.ds.app.mapper.AttendanceMapper;
 import com.ds.app.repository.IAttendanceRepository;
 import com.ds.app.repository.iEmployeeRepository;
@@ -83,7 +83,7 @@ class AttendanceServiceImplTest {
         when(attendanceRepo.findByEmployeeUserIdAndDate(1L, LocalDate.of(2026, 3, 10)))
                 .thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class,
+        assertThrows(ResourceNotFoundException2.class,
                 () -> attendanceService.getMyAttendanceByDate(LocalDate.of(2026, 3, 10)));
     }
 
