@@ -1,5 +1,6 @@
 package com.ds.app.security;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,75 +11,61 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.ds.app.service.impl.MyUserDetailService;
+import com.ds.app.service.MyUserDetailService;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-public class SecurityConfig{
+public class SecurityConfig {
 
-	@Autowired
-	private MyUserDetailService userDetailsService;
-	
-	@Autowired
-	JWTFilter jwtFilter;
-	
-	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
-		 http.csrf(csrf -> csrf.disable());
+    @Autowired
+    private MyUserDetailService userDetailsService;
 
-		 http.cors(cors->cors.disable());
-		 
-		 http.authorizeHttpRequests(auth -> auth
-				    .requestMatchers(
-				    	    "/swagger-ui/**",
-				    	    "/swagger-ui.html",
-				    	    "/v3/api-docs/**"
-				    	).permitAll()
-				    .requestMatchers("/finsecure/public/**").permitAll()
-				    .requestMatchers("/finsecure/admin/**").hasAuthority("ADMIN")
-				    .requestMatchers("/finsecure/hr/**").hasAnyAuthority("HR","ADMIN","MANAGER","EMPLOYEE")
-				    .requestMatchers("/finsecure/finance/**").hasAuthority("FINANCE")
-				    .requestMatchers("/finsecure/system/**").hasAuthority("SYSTEM")
-				    .requestMatchers("/finsecure/employee/**").hasAuthority("EMPLOYEE")
-				    .requestMatchers("/finsecure/insurance/**").hasAnyAuthority("EMPLOYEE", "ADMIN", "FINANCE", "HR")
-				    .anyRequest().authenticated()
-				);
-		 
-//		 http.authorizeHttpRequests(auth -> auth
-//				    .requestMatchers("/finsecure/public/**").permitAll()
-//				    .requestMatchers("/finsecure/admin/**").hasRole("ADMIN")
-//				    .requestMatchers("/finsecure/hr/**").hasRole("HR")
-//				    .requestMatchers("/finsecure/finance/**").hasRole("FINANCE")
-//				    .requestMatchers("/finsecure/system/**").hasRole("SYSTEM")
-//				    .requestMatchers("/finsecure/employee/**").hasRole("EMPLOYEE")
-//				    .anyRequest().authenticated()
-//				);
+    @Autowired
+    private JWTFilter jwtFilter;
 
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-	        http.sessionManagement(session ->
-	                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-	        );
+        http.csrf(csrf -> csrf.disable());
+        http.cors(cors -> cors.disable());
 
-	        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        http.authorizeHttpRequests(auth -> auth
+                .requestMatchers(
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/v3/api-docs/**"
+                ).permitAll()
+                .requestMatchers("/finsecure/public/**").permitAll()
+//                .requestMatchers("/finsecure/admin/**").hasAuthority("ADMIN")
+//                .requestMatchers("/finsecure/hr/**").hasAnyAuthority("HR", "ADMIN", "MANAGER", "EMPLOYEE")
+//                .requestMatchers("/finsecure/finance/**").hasAuthority("FINANCE")
+//                .requestMatchers("/finsecure/system/**").hasAuthority("SYSTEM")
+//                .requestMatchers("/finsecure/employee/**").hasAuthority("EMPLOYEE")
+//                .requestMatchers("/finsecure/insurance/**").hasAnyAuthority("EMPLOYEE", "ADMIN", "FINANCE", "HR")
+                .anyRequest().authenticated()
+        );
 
-	        return http.build();
-	}
-	
-	@Bean
-	PasswordEncoder passwordEncoder()
-	{
-		return new BCryptPasswordEncoder();
-	}
-	
-	@Bean
-	public AuthenticationManager authenticationManager(
-	        AuthenticationConfiguration config) throws Exception {
-	    return config.getAuthenticationManager();
-	}
+        http.sessionManagement(session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        );
+
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
 }

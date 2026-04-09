@@ -98,6 +98,7 @@ public class DepartmentServiceImpl  implements DepartmentService{
 
     @Override
     //--- internal helper-----------------------
+    @Override
     public Department findOrThrow(Long id) {
         return departmentRepo.findById(id)
                 .orElseThrow(() -> new HrResourceNotFoundException("Department " , id));
