@@ -40,7 +40,16 @@ public class AllocationServiceImpl implements AllocationService{
     @Autowired private TrainingServiceClient trainingClient;
     @Autowired private TimesheetServiceClient timesheetClient;
     @Autowired private AssetsServiceClient assetsClient;
+<<<<<<< HEAD
 
+=======
+<<<<<<< HEAD
+
+=======
+    
+>>>>>>> 460b80319683eda7f335758b4df8c84147c8d2fe
+    @Override
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     @Transactional
     public String assign(AllocationRequestDTO req,Long performedByUserId) {
     	
@@ -126,7 +135,16 @@ public class AllocationServiceImpl implements AllocationService{
 
         return "Employee assigned successfully";
     }
+<<<<<<< HEAD
 
+=======
+<<<<<<< HEAD
+=======
+
+>>>>>>> 460b80319683eda7f335758b4df8c84147c8d2fe
+    
+    @Override
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     @Transactional
     public String deallocate(DeallocationRequestDTO req, Long performedByUserId) {
 
@@ -159,6 +177,14 @@ public class AllocationServiceImpl implements AllocationService{
         return "Employee deallocated (" + req.getType() + ") successfully";
     }
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+    
+=======
+>>>>>>> 460b80319683eda7f335758b4df8c84147c8d2fe
+    @Override
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     public List<AllocationHistory> getHistory(Long l) {
         return historyRepo.findByEmployeeIdOrderByActionAtAsc(l);
     }

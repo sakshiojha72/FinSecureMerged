@@ -20,7 +20,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 
+<<<<<<< HEAD
 //@Component
+=======
+@Component
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
 public class DataLoader implements CommandLineRunner {
 
 
@@ -38,10 +42,17 @@ public class DataLoader implements CommandLineRunner {
     @Override
     public void run(String... args) {
         // skip seeding if data already present
+<<<<<<< HEAD
         if (employeeRepo.count() > 0) {
             System.out.println("[Seeder] Data already exists — skipping seed");
             return;
         }
+=======
+//        if (employeeRepo.count() > 0) {
+//            System.out.println("[Seeder] Data already exists — skipping seed");
+//            return;
+//        }
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
 
 
         System.out.println("[Seeder] Starting data seed...");

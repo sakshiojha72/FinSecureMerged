@@ -8,16 +8,24 @@ import org.springframework.stereotype.Service;
 
 import com.ds.app.dto.response.EmployeeTopUpResponseDTO;
 import com.ds.app.dto.response.InsuranceSummaryDTO;
+<<<<<<< HEAD
 import com.ds.app.dto.response.TopUpPlanResponseDTO;
+=======
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
 import com.ds.app.entity.Employee;
 import com.ds.app.entity.EmployeeInsurance;
 import com.ds.app.entity.EmployeeTopUp;
 import com.ds.app.enums.InsuranceStatus;
+<<<<<<< HEAD
+=======
+import com.ds.app.exception.ResourceNotFoundException;
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
 import com.ds.app.repository.EmployeeInsuranceRepository;
 import com.ds.app.repository.EmployeeRepository;
 import com.ds.app.repository.EmployeeTopUpRepository;
 import com.ds.app.service.InsuranceSummaryService;
 
+<<<<<<< HEAD
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -61,12 +69,46 @@ public class InsuranceSummaryServiceImpl implements InsuranceSummaryService {
 
         // TOTAL COVERAGE CALCULATION
         // base coverage + sum of all active top-up additional coverage
+=======
+@Service
+public class InsuranceSummaryServiceImpl implements InsuranceSummaryService {
+
+    @Autowired
+    private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private EmployeeInsuranceRepository employeeInsuranceRepository;
+
+    @Autowired
+    private EmployeeTopUpRepository employeeTopUpRepository;
+
+    @Override
+    public InsuranceSummaryDTO getInsuranceSummary(Long employeeId) {
+
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Employee not found with id: " + employeeId));
+
+        EmployeeInsurance insurance = employeeInsuranceRepository
+                .findByEmployee_UserIdAndStatus(employeeId, InsuranceStatus.ACTIVE)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "No active insurance found for this employee"));
+
+        List<EmployeeTopUp> activeTopUps = employeeTopUpRepository
+                .findByEmployee_UserIdAndStatus(employeeId, InsuranceStatus.ACTIVE);
+
+        List<EmployeeTopUpResponseDTO> topUpDTOs = activeTopUps.stream()
+                .map(topUp -> mapToTopUpResponse(topUp, employee))
+                .collect(Collectors.toList());
+
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
         Double totalCoverage =
             insurance.getInsurancePlan().getCoverageAmount()
             + activeTopUps.stream()
                 .mapToDouble(t -> t.getTopUpPlan().getAdditionalCoverage())
                 .sum();
 
+<<<<<<< HEAD
         // full summary response
         InsuranceSummaryDTO summary = new InsuranceSummaryDTO();
         summary.setEmployeeId(employee.getUserId());
@@ -78,11 +120,27 @@ public class InsuranceSummaryServiceImpl implements InsuranceSummaryService {
         summary.setBaseCoverageAmount(
             insurance.getInsurancePlan().getCoverageAmount()
         );
+=======
+        String firstName = employee.getFirstName();
+        String lastName  = employee.getLastName();
+        String fullName = (firstName != null && !firstName.isBlank()
+                           && lastName != null && !lastName.isBlank())
+                ? firstName + " " + lastName
+                : employee.getUsername();
+
+        InsuranceSummaryDTO summary = new InsuranceSummaryDTO();
+        summary.setEmployeeId(employee.getUserId());
+        summary.setEmployeeName(fullName);
+        summary.setEmployeeInsuranceId(insurance.getId());
+        summary.setBasePlanName(insurance.getInsurancePlan().getPlanName());
+        summary.setBaseCoverageAmount(insurance.getInsurancePlan().getCoverageAmount());
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
         summary.setExpiryDate(insurance.getExpiryDate());
         summary.setInsuranceStatus(insurance.getStatus());
         summary.setActiveTopUps(topUpDTOs);
         summary.setTotalCoverageAmount(totalCoverage);
 
+<<<<<<< HEAD
        return summary;
 
     }
@@ -97,6 +155,26 @@ public class InsuranceSummaryServiceImpl implements InsuranceSummaryService {
         dto.setEmployeeTopUpId(topUp.getId());
         dto.setEmployeeId(employee.getUserId());
         dto.setEmployeeName(employee.getFirstName()+" "+employee.getLastName());
+=======
+        return summary;
+    }
+
+    private EmployeeTopUpResponseDTO mapToTopUpResponse(
+            EmployeeTopUp topUp, Employee employee) {
+
+        EmployeeTopUpResponseDTO dto = new EmployeeTopUpResponseDTO();
+        dto.setEmployeeTopUpId(topUp.getId());
+        dto.setEmployeeId(employee.getUserId());
+
+        String firstName = employee.getFirstName();
+        String lastName  = employee.getLastName();
+        dto.setEmployeeName(
+            (firstName != null && !firstName.isBlank() && lastName != null && !lastName.isBlank())
+                ? firstName + " " + lastName
+                : employee.getUsername()
+        );
+
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
         dto.setTopUpName(topUp.getTopUpPlan().getTopUpName());
         dto.setAdditionalCoverage(topUp.getTopUpPlan().getAdditionalCoverage());
         dto.setPrice(topUp.getTopUpPlan().getPrice());
@@ -104,6 +182,7 @@ public class InsuranceSummaryServiceImpl implements InsuranceSummaryService {
         dto.setExpiryDate(topUp.getExpiryDate());
         dto.setStatus(topUp.getStatus());
         dto.setCreatedAt(topUp.getCreatedAt());
+<<<<<<< HEAD
 
         return dto;
     }
@@ -112,3 +191,8 @@ public class InsuranceSummaryServiceImpl implements InsuranceSummaryService {
     }
 
 
+=======
+        return dto;
+    }
+}
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e

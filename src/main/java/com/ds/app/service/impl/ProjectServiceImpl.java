@@ -25,6 +25,10 @@ public class ProjectServiceImpl implements ProjectService{
     @Autowired private DepartmentService departmentService;
 
     // ── entity → response DTO
+<<<<<<< HEAD
+=======
+    
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     public ProjectResponseDTO toResponse(Project p) {
         ProjectResponseDTO res = new ProjectResponseDTO();
         res.setId(p.getId());
@@ -40,6 +44,10 @@ public class ProjectServiceImpl implements ProjectService{
     }
 
     // ── create
+<<<<<<< HEAD
+=======
+    @Override
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     public ProjectResponseDTO create(ProjectRequestDTO req) {
         Project project = new Project();
         project.setName(req.getName());
@@ -52,6 +60,10 @@ public class ProjectServiceImpl implements ProjectService{
     }
 
     // ── update 
+<<<<<<< HEAD
+=======
+    @Override
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     public ProjectResponseDTO update(Long id, ProjectRequestDTO req) {
         Project project = findOrThrow(id);
         if (req.getName()         != null) project.setName(req.getName());
@@ -64,17 +76,29 @@ public class ProjectServiceImpl implements ProjectService{
     }
 
     // ── get all 
+<<<<<<< HEAD
+=======
+    @Override
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     public List<ProjectResponseDTO> getAll() {
         return projectRepo.findAll().stream()
                 .map(this::toResponse).collect(Collectors.toList());
     }
 
     // ── get by id 
+<<<<<<< HEAD
+=======
+    @Override
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     public ProjectResponseDTO getById(Long id) {
         return toResponse(findOrThrow(id));
     }
 
     // ── get by company 
+<<<<<<< HEAD
+=======
+    @Override
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     public List<ProjectResponseDTO> getByCompany(Long companyId) {
         return projectRepo.findByCompany(companyService.findOrThrow(companyId))
                 .stream().map(this::toResponse).collect(Collectors.toList());
@@ -82,6 +106,10 @@ public class ProjectServiceImpl implements ProjectService{
     
 
     // update status
+<<<<<<< HEAD
+=======
+    @Override
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     public ProjectResponseDTO updateStatus(Long id, String status) {
         if (!status.equals("ACTIVE") && !status.equals("INACTIVE") && !status.equals("COMPLETED") && !status.equals("ON_HOLD"))
             throw new HrBusinessRuleException("Status must be ACTIVE, INACTIVE, COMPLETED or ON_HOLD");
@@ -93,6 +121,10 @@ public class ProjectServiceImpl implements ProjectService{
 
 
     // -- internal helper 
+<<<<<<< HEAD
+=======
+    @Override
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     public Project findOrThrow(Long id) {
         return projectRepo.findById(id)
                 .orElseThrow(() -> new HrResourceNotFoundException("Project ",id));

@@ -29,6 +29,13 @@ public class ReportServiceImpl implements ReportService {
     private final SalaryJobRepository salaryJobRepository;
     private final EmployeeRepository employeeRepository;
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+    // Report 1: Summary dashboard 
+    // Returns key counts across the whole system
+=======
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     private final iEmployeeRepository employeeRepo;
     private final iEscalationRepository escalationRepo;
     private final iCompanyRepository companyRepo;
@@ -76,6 +83,10 @@ public class ReportServiceImpl implements ReportService {
 
     // ================= HR =================
 
+<<<<<<< HEAD
+=======
+>>>>>>> 460b80319683eda7f335758b4df8c84147c8d2fe
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     @Override
     public Map<String, Long> getSummary() {
         Map<String, Long> summary = new LinkedHashMap<>();
@@ -87,6 +98,14 @@ public class ReportServiceImpl implements ReportService {
         return summary;
     }
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+    // Report 2: Count employees per company
+    // Returns { "ICICI Bank": 12, "Citi": 8 }
+=======
+>>>>>>> 460b80319683eda7f335758b4df8c84147c8d2fe
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     @Override
     public Map<String, Long> countGroupByCompany() {
         List<Object[]> rows = employeeRepo.countGroupByCompany();
@@ -102,6 +121,14 @@ public class ReportServiceImpl implements ReportService {
         return result;
     }
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+    // Report 3: Count employees per department 
+    // Returns { "Risk & Compliance": 5, "Tech": 10 }
+=======
+>>>>>>> 460b80319683eda7f335758b4df8c84147c8d2fe
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     @Override
     public Map<String, Long> countGroupByDepartment() {
         List<Object[]> rows = employeeRepo.countGroupByDepartment();
@@ -117,6 +144,14 @@ public class ReportServiceImpl implements ReportService {
         return result;
     }
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+    //Report 4: Count employees per type 
+    // Returns { "FRESHER": 20, "EXPERIENCED": 15, "CERTIFIED": 8 }
+=======
+>>>>>>> 460b80319683eda7f335758b4df8c84147c8d2fe
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     @Override
     public Map<String, Long> countGroupByEmployeeType() {
         List<Object[]> rows = employeeRepo.countGroupByEmployeeType();
@@ -128,6 +163,14 @@ public class ReportServiceImpl implements ReportService {
         return result;
     }
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+    //  Report 5: Count employees per status 
+    // Returns { "ACTIVE": 40, "INACTIVE": 3, "TERMINATED": 1 }
+=======
+>>>>>>> 460b80319683eda7f335758b4df8c84147c8d2fe
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     @Override
     public Map<String, Long> countGroupByStatus() {
         List<Object[]> rows = employeeRepo.countGroupByStatus();
@@ -138,16 +181,40 @@ public class ReportServiceImpl implements ReportService {
         return result;
     }
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+    //Report 6: Count in a specific company
+=======
+>>>>>>> 460b80319683eda7f335758b4df8c84147c8d2fe
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     @Override
     public long countByCompany(Long companyId) {
         return employeeService.countByCompany(companyId);
     }
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+    // Report 7: Count in a specific department 
+=======
+>>>>>>> 460b80319683eda7f335758b4df8c84147c8d2fe
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     @Override
     public long countByDepartment(Long deptId) {
         return employeeService.countByDepartment(deptId);
     }
+<<<<<<< HEAD
 
+=======
+<<<<<<< HEAD
+    
+    
+    //Report 8: Company perspective business Report
+=======
+
+>>>>>>> 460b80319683eda7f335758b4df8c84147c8d2fe
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     @Override
     public Map<String, Map<String, List<String>>> getCompanyPerspectiveReport() {
         List<CompanyDetailDTO> data = employeeRepo.getDetailedCompanyReport();

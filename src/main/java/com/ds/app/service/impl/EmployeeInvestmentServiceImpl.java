@@ -108,6 +108,15 @@ public class EmployeeInvestmentServiceImpl implements EmployeeInvestmentService 
         /* =====================================================
            DIRECT EQUITY / BONDS
            ===================================================== */
+<<<<<<< HEAD
+=======
+        if (dto.getInvestmentType() == InvestmentType.DIRECT_EQUITY
+                && dto.getSecurityName() == null) {
+        	throw new InvestmentComplianceException(
+        	        "Security name is required for DIRECT_EQUITY"
+        	);
+        }
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
         else if (dto.getInvestmentType() == InvestmentType.DIRECT_EQUITY
                 || dto.getInvestmentType() == InvestmentType.BONDS) {
 

@@ -34,6 +34,10 @@ public class AppraisalServiceImpl implements AppraisalService{
     @Autowired private EmailService emailService;
 
     // both saves in one transaction — if one fails, both roll back
+<<<<<<< HEAD
+=======
+    @Override
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     @Transactional
     public AppraisalResponseDTO initiate(AppraisalRequestDTO req, Long hrUserId) {
 
@@ -64,6 +68,10 @@ public class AppraisalServiceImpl implements AppraisalService{
     }
 
     // HR — full history paginated
+<<<<<<< HEAD
+=======
+    @Override
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     public Map<String, Object> getHistory(Long employeeUserId, int page, int size) {
         Employee emp = employeeService.findOrThrow(employeeUserId);
         Pageable pageable = PageRequest.of(page, size, Sort.by("appraisalDate").descending());
@@ -77,8 +85,15 @@ public class AppraisalServiceImpl implements AppraisalService{
         res.put("isLast",      result.isLast());
         return res;
     }
+<<<<<<< HEAD
 
     //  entity → response DTO 
+=======
+    
+    
+    //  entity → response DTO 
+    
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     private AppraisalResponseDTO toResponse(Appraisal a) {
         AppraisalResponseDTO res = new AppraisalResponseDTO();
         res.setId(a.getId());

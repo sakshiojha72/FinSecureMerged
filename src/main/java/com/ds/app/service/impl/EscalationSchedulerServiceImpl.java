@@ -29,10 +29,20 @@ public class EscalationSchedulerServiceImpl implements EscalationSchedulerServic
     @Autowired private EmailService emailService;
 
 
+<<<<<<< HEAD
     // cron = second minute hour day month weekday
     // "0 0 9 * * *" = every day at 9:00:00 AM
     @Scheduled(cron = "0 0 9 * * *")//0 0 9
     @Transactional
+=======
+    @Override
+    // cron = second minute hour day month weekday
+    // "0 0 9 * * *" = every day at 9:00:00 AM
+    @Override
+    @Scheduled(cron = "0 0 9 * * *")//0 0 9
+    @Transactional
+    
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     public void alertOnStaleEscalations() {
 
 

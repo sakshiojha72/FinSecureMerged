@@ -15,6 +15,12 @@ import com.ds.app.entity.EmployeeInsurance;
 import com.ds.app.entity.InsuranceClaim;
 import com.ds.app.enums.ClaimStatus;
 import com.ds.app.enums.InsuranceStatus;
+<<<<<<< HEAD
+=======
+import com.ds.app.exception.BusinessRuleException;
+import com.ds.app.exception.ConflictException;
+import com.ds.app.exception.ResourceNotFoundException;
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
 import com.ds.app.repository.EmployeeInsuranceRepository;
 import com.ds.app.repository.EmployeeRepository;
 import com.ds.app.repository.InsuranceClaimRepository;
@@ -23,6 +29,7 @@ import com.ds.app.service.InsuranceClaimService;
 @Service
 public class InsuranceClaimServiceImpl implements InsuranceClaimService {
 
+<<<<<<< HEAD
 	@Autowired
 	private InsuranceClaimRepository insuranceClaimRepository;
 	
@@ -60,11 +67,45 @@ public class InsuranceClaimServiceImpl implements InsuranceClaimService {
 					"You already have a pending claim. Resolve it before raising a new one");
 		}
 		
+=======
+    @Autowired
+    private InsuranceClaimRepository insuranceClaimRepository;
+
+    @Autowired
+    private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private EmployeeInsuranceRepository employeeInsuranceRepository;
+
+    @Override
+    public ClaimResponseDTO raiseClaim(ClaimRequestDTO dto, Long employeeId) throws ResourceNotFoundException {
+
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+
+        EmployeeInsurance insurance = employeeInsuranceRepository
+                .findById(dto.getEmployeeInsuranceId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Insurance record for the employee not found"));
+
+        if (insurance.getStatus() == InsuranceStatus.EXPIRED) {
+            throw new BusinessRuleException(
+                    "Cannot raise a claim on an expired insurance");
+        }
+
+        if (insuranceClaimRepository.existsByEmployee_UserIdAndStatus(
+                employeeId, ClaimStatus.PENDING)) {
+            throw new ConflictException(
+                    "You already have a pending claim. Resolve it before raising a new one");
+        }
+
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
         InsuranceClaim claim = new InsuranceClaim();
         claim.setEmployee(employee);
         claim.setEmployeeInsurance(insurance);
         claim.setClaimAmount(dto.getClaimAmount());
         claim.setReason(dto.getReason());
+<<<<<<< HEAD
         claim.setStatus(ClaimStatus.PENDING); 
         claim.setRaisedAt(LocalDateTime.now()); 
 
@@ -112,19 +153,76 @@ public class InsuranceClaimServiceImpl implements InsuranceClaimService {
         claim.setAdminRemarks(dto.getAdminRemarks()); // mandatory — audit trail
         claim.setResolvedBy(dto.getResolvedBy());     // which admin resolved
         claim.setResolvedAt(LocalDateTime.now());      // timestamp of resolution
+=======
+        claim.setStatus(ClaimStatus.PENDING);
+        claim.setRaisedAt(LocalDateTime.now());
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
 
         InsuranceClaim saved = insuranceClaimRepository.save(claim);
         return mapToClaimResponse(saved);
     }
 
+<<<<<<< HEAD
 	
 
     // MAPPERS
+=======
+    @Override
+    public List<ClaimResponseDTO> getEmployeeClaims(Long employeeId) {
+        return insuranceClaimRepository
+                .findByEmployee_UserId(employeeId)
+                .stream()
+                .map(this::mapToClaimResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public ClaimResponseDTO updateClaimStatus(ClaimStatusUpdateDTO dto) throws ResourceNotFoundException {
+
+        InsuranceClaim claim = insuranceClaimRepository
+                .findById(dto.getClaimId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Claim not found with id: " + dto.getClaimId()));
+
+        if (claim.getStatus() != ClaimStatus.PENDING) {
+            throw new BusinessRuleException(
+                    "Only PENDING claims can be approved or rejected");
+        }
+
+        if (dto.getStatus() == ClaimStatus.PENDING) {
+            throw new BusinessRuleException(
+                    "Cannot set claim status back to PENDING");
+        }
+
+        claim.setStatus(dto.getStatus());
+        claim.setAdminRemarks(dto.getAdminRemarks());
+        claim.setResolvedBy(dto.getResolvedBy());
+        claim.setResolvedAt(LocalDateTime.now());
+
+        InsuranceClaim saved = insuranceClaimRepository.save(claim);
+        return mapToClaimResponse(saved);
+    }
+
+    @Override
+    public List<ClaimResponseDTO> getAllClaims(ClaimStatus status) {
+        if (status != null) {
+            return insuranceClaimRepository.findByStatus(status)
+                    .stream()
+                    .map(this::mapToClaimResponse)
+                    .collect(Collectors.toList());
+        }
+        return insuranceClaimRepository.findAll()
+                .stream()
+                .map(this::mapToClaimResponse)
+                .collect(Collectors.toList());
+    }
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
 
     private ClaimResponseDTO mapToClaimResponse(InsuranceClaim claim) {
         ClaimResponseDTO dto = new ClaimResponseDTO();
         dto.setClaimId(claim.getId());
         dto.setEmployeeId(claim.getEmployee().getUserId());
+<<<<<<< HEAD
         dto.setEmployeeName(claim.getEmployee().getFirstName()+" "+ claim.getEmployee().getLastName());
         dto.setEmployeeInsuranceId(
             claim.getEmployeeInsurance().getId()
@@ -132,6 +230,19 @@ public class InsuranceClaimServiceImpl implements InsuranceClaimService {
         dto.setPlanName(
             claim.getEmployeeInsurance().getInsurancePlan().getPlanName()
         );
+=======
+
+        String firstName = claim.getEmployee().getFirstName();
+        String lastName  = claim.getEmployee().getLastName();
+        dto.setEmployeeName(
+            (firstName != null && !firstName.isBlank() && lastName != null && !lastName.isBlank())
+                ? firstName + " " + lastName
+                : claim.getEmployee().getUsername()
+        );
+
+        dto.setEmployeeInsuranceId(claim.getEmployeeInsurance().getId());
+        dto.setPlanName(claim.getEmployeeInsurance().getInsurancePlan().getPlanName());
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
         dto.setClaimAmount(claim.getClaimAmount());
         dto.setReason(claim.getReason());
         dto.setStatus(claim.getStatus());
@@ -142,6 +253,7 @@ public class InsuranceClaimServiceImpl implements InsuranceClaimService {
         dto.setCreatedAt(claim.getCreatedAt());
         return dto;
     }
+<<<<<<< HEAD
 
 	@Override
 	public List<ClaimResponseDTO> getAllClaims(ClaimStatus status) {
@@ -161,3 +273,6 @@ public class InsuranceClaimServiceImpl implements InsuranceClaimService {
 
 
 
+=======
+}
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e

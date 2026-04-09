@@ -16,6 +16,7 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
 
+<<<<<<< HEAD
 	
 	// ----- Tarushi Code Started 
 	
@@ -42,6 +43,8 @@ public class GlobalExceptionHandler {
 	
 	
 	
+=======
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
     @ExceptionHandler(BlacklistedBankException.class)
     public ResponseEntity<String> handleBlacklistedBankException(BlacklistedBankException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
@@ -118,4 +121,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("Unexpected error occurred");
     }
+<<<<<<< HEAD
+=======
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<String> handleConflict(ConflictException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(BusinessRuleException.class)
+    public ResponseEntity<String> handleBusinessRule(BusinessRuleException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
 }

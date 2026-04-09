@@ -7,7 +7,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+<<<<<<< HEAD
 import lombok.AllArgsConstructor;
+=======
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +22,10 @@ import lombok.ToString;
 @Getter
 @Setter
 @NoArgsConstructor
+<<<<<<< HEAD
 @AllArgsConstructor
+=======
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
 @EqualsAndHashCode(exclude = "role")
 @ToString(exclude = {
     "failedLoginAttemptsCount",
@@ -38,4 +44,14 @@ public class AppUser {
     private Boolean isAccountLocked = false;
 
     private UserRole role;
+<<<<<<< HEAD
+=======
+
+    
+    public AppUser(String username, String password, UserRole role) {
+        this.username = username;
+        this.password = password;
+        this.role = role;
+    }
+>>>>>>> 388aecd46cb67e0f22d0bb0c6ec3262d3d9c866e
 }
