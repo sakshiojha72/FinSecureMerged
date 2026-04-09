@@ -41,6 +41,7 @@ public class AllocationServiceImpl implements AllocationService{
     @Autowired private TimesheetServiceClient timesheetClient;
     @Autowired private AssetsServiceClient assetsClient;
 
+    @Override
     @Transactional
     public String assign(AllocationRequestDTO req,Long performedByUserId) {
     	
@@ -126,7 +127,8 @@ public class AllocationServiceImpl implements AllocationService{
 
         return "Employee assigned successfully";
     }
-
+    
+    @Override
     @Transactional
     public String deallocate(DeallocationRequestDTO req, Long performedByUserId) {
 
@@ -159,6 +161,8 @@ public class AllocationServiceImpl implements AllocationService{
         return "Employee deallocated (" + req.getType() + ") successfully";
     }
 
+    
+    @Override
     public List<AllocationHistory> getHistory(Long l) {
         return historyRepo.findByEmployeeIdOrderByActionAtAsc(l);
     }

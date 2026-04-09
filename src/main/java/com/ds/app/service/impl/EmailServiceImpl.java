@@ -13,7 +13,8 @@ import com.ds.app.service.EmailService;
 public class EmailServiceImpl implements EmailService{
 
     @Autowired private JavaMailSender mailSender;
-
+    
+    
     private void send(String to, String subject, String body) {
        
             SimpleMailMessage msg = new SimpleMailMessage();
@@ -24,7 +25,8 @@ public class EmailServiceImpl implements EmailService{
             mailSender.send(msg);
       
     }
-
+    
+    @Override
     public void sendAllocationEmail(String to, String name,
                                      String company, String dept, String project) {
         send(to, "FinSecure — You have been assigned",
@@ -35,7 +37,7 @@ public class EmailServiceImpl implements EmailService{
              + "  Project    : " + (project != null ? project : "Not assigned yet") + "\n\n"
              + "Regards,\nFinSecure HR Team");
     }
-
+    @Override
     public void sendDeallocationEmail(String to, String name, String type) {
         send(to, "FinSecure — Allocation Update",
              "Dear " + name + ",\n\n"
@@ -44,6 +46,7 @@ public class EmailServiceImpl implements EmailService{
              + "Regards,\nFinSecure HR Team");
     }
 
+    @Override
     public void sendEscalationEmail(String to, String name) {
         send(to, "FinSecure — Escalation Notice",
              "Dear " + name + ",\n\n"
@@ -51,7 +54,8 @@ public class EmailServiceImpl implements EmailService{
              + "Please log in to your dashboard for details.\n\n"
              + "Regards,\nFinSecure HR Team");
     }
-
+    
+    @Override
     public void sendAppraisalEmail(String to, String name, Double newSalary) {
         send(to, "FinSecure — Salary Appraisal Completed",
              "Dear " + name + ",\n\n"
@@ -61,7 +65,7 @@ public class EmailServiceImpl implements EmailService{
     }
     
     
- 
+    @Override
     public void sendStaleEscalationAlert(String to, Long escalationId,
                                           String targetName, String targetEmail,
                                           long daysOpen) {

@@ -30,6 +30,7 @@ public class ReportServiceImpl implements ReportService {
 
     // Report 1: Summary dashboard 
     // Returns key counts across the whole system
+    @Override
     public Map<String, Long> getSummary() {
         Map<String, Long> summary = new LinkedHashMap<>();
         summary.put("totalEmployees",        employeeRepo.countByIsDeletedFalse());
@@ -42,6 +43,7 @@ public class ReportServiceImpl implements ReportService {
 
     // Report 2: Count employees per company
     // Returns { "ICICI Bank": 12, "Citi": 8 }
+    @Override
     public Map<String, Long> countGroupByCompany() {
         List<Object[]> rows = employeeRepo.countGroupByCompany();
         Map<String, Long> result = new LinkedHashMap<>();
@@ -59,6 +61,7 @@ public class ReportServiceImpl implements ReportService {
 
     // Report 3: Count employees per department 
     // Returns { "Risk & Compliance": 5, "Tech": 10 }
+    @Override
     public Map<String, Long> countGroupByDepartment() {
         List<Object[]> rows = employeeRepo.countGroupByDepartment();
         Map<String, Long> result = new LinkedHashMap<>();
@@ -75,6 +78,7 @@ public class ReportServiceImpl implements ReportService {
 
     //Report 4: Count employees per type 
     // Returns { "FRESHER": 20, "EXPERIENCED": 15, "CERTIFIED": 8 }
+    @Override
     public Map<String, Long> countGroupByEmployeeType() {
         List<Object[]> rows = employeeRepo.countGroupByEmployeeType();
         Map<String, Long> result = new LinkedHashMap<>();
@@ -87,6 +91,7 @@ public class ReportServiceImpl implements ReportService {
 
     //  Report 5: Count employees per status 
     // Returns { "ACTIVE": 40, "INACTIVE": 3, "TERMINATED": 1 }
+    @Override
     public Map<String, Long> countGroupByStatus() {
         List<Object[]> rows = employeeRepo.countGroupByStatus();
         Map<String, Long> result = new LinkedHashMap<>();
@@ -97,17 +102,20 @@ public class ReportServiceImpl implements ReportService {
     }
 
     //Report 6: Count in a specific company
+    @Override
     public long countByCompany(Long companyId) {
         return employeeService.countByCompany(companyId);
     }
 
     // Report 7: Count in a specific department 
+    @Override
     public long countByDepartment(Long deptId) {
         return employeeService.countByDepartment(deptId);
     }
     
     
     //Report 8: Company perspective business Report
+    @Override
     public Map<String, Map<String, List<String>>> getCompanyPerspectiveReport() {
         List<CompanyDetailDTO> data = employeeRepo.getDetailedCompanyReport();
 

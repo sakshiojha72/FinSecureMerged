@@ -53,8 +53,9 @@ public class EmployeeServiceImpl implements EmployeeService{
 		res.setStatus(emp.getStatus());
 		return res;
 	}
-
+	
 	// get all employees paginated
+	@Override
 	public Map<String, Object> getAllEmployees(int page, int size) {
 		Pageable pageable = PageRequest.of(page, size, Sort.by("joiningDate").descending());
 		return buildPage(employeeRepo.findByIsDeletedFalse(pageable));
@@ -62,12 +63,14 @@ public class EmployeeServiceImpl implements EmployeeService{
 	}
 
 	// get one Employee by userId
+	@Override
 	public EmployeeResponseDTO getById(Long userId) {
 		Employee emp = findOrThrow(userId);
 		return toResponse(emp);
 	}
 
 	// update Employee Profile(HR)
+	@Override
 	public EmployeeResponseDTO updateEmployee(Long userId, EmployeeRequestDTO req) {
 		Employee emp = findOrThrow(userId);
 		if (req.getEmployeeCode() != null)
@@ -86,6 +89,7 @@ public class EmployeeServiceImpl implements EmployeeService{
 	}
 
 	// soft Delete
+	@Override
 	public String softDelete(Long userId) {
 		Employee emp = findOrThrow(userId);
 		emp.setIsDeleted(true);
@@ -94,38 +98,40 @@ public class EmployeeServiceImpl implements EmployeeService{
 	}
 
 	// filters paginated
-
+	@Override
 	public Map<String,Object> getByCompany(Long companyId,int page,int size){
 		 return buildPage(employeeRepo.findByCompany(companyService.findOrThrow(companyId), null));
 	 }
-
+	@Override
 	public Map<String, Object> getByDepartment(Long deptId, int page, int size) {
 		return buildPage(
 				employeeRepo.findByDepartment(departmentService.findOrThrow(deptId), PageRequest.of(page, size)));
 	}
-
+	@Override
 	public Map<String, Object> getByProject(Long projectId, int page, int size) {
 		return buildPage(employeeRepo.findByProject(projectService.findOrThrow(projectId), PageRequest.of(page, size)));
 	}
-
+	@Override
 	public Map<String, Object> getEscalated(int page, int size) {
 		return buildPage(employeeRepo.findByIsEscalatedTrue(PageRequest.of(page, size)));
 	}
-
+	@Override
 	public Map<String, Object> getUnassigned(int page, int size) {
 		return buildPage(employeeRepo.findByProjectIsNullAndIsDeletedFalse(PageRequest.of(page, size)));
 	}
 
 	// COUNT helpers for reports
+	@Override
 	public long countByCompany(Long companyId) {
 		return employeeRepo.countByCompany(companyService.findOrThrow(companyId));
 	}
-
+	@Override
 	public long countByDepartment(Long deptId) {
 		return employeeRepo.countByDepartment(departmentService.findOrThrow(deptId));
 	}
 
 	// INTERNAL HELPERS
+	
 	public Map<String, Object> buildPage(Page<Employee> page) {
 		Map<String, Object> res = new LinkedHashMap<>();
 		res.put("content", page.getContent().stream().map(this::toResponse).collect(Collectors.toList()));
@@ -135,7 +141,8 @@ public class EmployeeServiceImpl implements EmployeeService{
 		res.put("isLast", page.isLast());
 		return res;
 	}
-
+	
+	@Override
 	public Employee findOrThrow(Long userId) {
 		return employeeRepo.findById(userId).orElseThrow(() -> new HrResourceNotFoundException("Employee" , userId));
 	}

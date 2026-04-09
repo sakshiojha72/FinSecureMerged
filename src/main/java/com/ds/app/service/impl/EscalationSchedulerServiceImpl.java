@@ -31,8 +31,10 @@ public class EscalationSchedulerServiceImpl implements EscalationSchedulerServic
 
     // cron = second minute hour day month weekday
     // "0 0 9 * * *" = every day at 9:00:00 AM
+    @Override
     @Scheduled(cron = "0 0 9 * * *")//0 0 9
     @Transactional
+    
     public void alertOnStaleEscalations() {
 
 

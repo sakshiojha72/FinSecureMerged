@@ -25,6 +25,7 @@ public class ProjectServiceImpl implements ProjectService{
     @Autowired private DepartmentService departmentService;
 
     // ── entity → response DTO
+    
     public ProjectResponseDTO toResponse(Project p) {
         ProjectResponseDTO res = new ProjectResponseDTO();
         res.setId(p.getId());
@@ -40,6 +41,7 @@ public class ProjectServiceImpl implements ProjectService{
     }
 
     // ── create
+    @Override
     public ProjectResponseDTO create(ProjectRequestDTO req) {
         Project project = new Project();
         project.setName(req.getName());
@@ -52,6 +54,7 @@ public class ProjectServiceImpl implements ProjectService{
     }
 
     // ── update 
+    @Override
     public ProjectResponseDTO update(Long id, ProjectRequestDTO req) {
         Project project = findOrThrow(id);
         if (req.getName()         != null) project.setName(req.getName());
@@ -64,17 +67,20 @@ public class ProjectServiceImpl implements ProjectService{
     }
 
     // ── get all 
+    @Override
     public List<ProjectResponseDTO> getAll() {
         return projectRepo.findAll().stream()
                 .map(this::toResponse).collect(Collectors.toList());
     }
 
     // ── get by id 
+    @Override
     public ProjectResponseDTO getById(Long id) {
         return toResponse(findOrThrow(id));
     }
 
     // ── get by company 
+    @Override
     public List<ProjectResponseDTO> getByCompany(Long companyId) {
         return projectRepo.findByCompany(companyService.findOrThrow(companyId))
                 .stream().map(this::toResponse).collect(Collectors.toList());
@@ -82,6 +88,7 @@ public class ProjectServiceImpl implements ProjectService{
     
 
     // update status
+    @Override
     public ProjectResponseDTO updateStatus(Long id, String status) {
         if (!status.equals("ACTIVE") && !status.equals("INACTIVE") && !status.equals("COMPLETED") && !status.equals("ON_HOLD"))
             throw new HrBusinessRuleException("Status must be ACTIVE, INACTIVE, COMPLETED or ON_HOLD");
@@ -93,6 +100,7 @@ public class ProjectServiceImpl implements ProjectService{
 
 
     // -- internal helper 
+    @Override
     public Project findOrThrow(Long id) {
         return projectRepo.findById(id)
                 .orElseThrow(() -> new HrResourceNotFoundException("Project ",id));
