@@ -2,6 +2,7 @@ package com.ds.app.entity;
 
 import com.ds.app.enums.CertificationStatus;
 import com.ds.app.enums.EmployeeExperience;
+import com.ds.app.enums.SkillStatus;
 import com.ds.app.enums.Status;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -97,6 +98,10 @@ public class Employee extends AppUser {
 
     @Enumerated(EnumType.STRING)
     private CertificationStatus certificationStatus;
+    
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = true)
+	private SkillStatus  skillStatus;
 
     /* ===================== Relationships ===================== */
 
@@ -156,6 +161,17 @@ public class Employee extends AppUser {
     @OneToMany(mappedBy = "employee", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Appraisal> appraisals = new ArrayList<>();
+    
+    
+    
+	
+	//---------------------------changes made by saurabh-----------------------
+	@OneToMany(mappedBy = "employee",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+	private List<EmployeeTraining> employeeTrainings= new ArrayList<>();
+	
+	@OneToMany(mappedBy ="employee",cascade=CascadeType.ALL,fetch=FetchType.LAZY)
+	private List<Certification> certifications = new ArrayList<>();
+	
 
     /* ===================== Convenience Getters ===================== */
     public Long getCompanyId() {
