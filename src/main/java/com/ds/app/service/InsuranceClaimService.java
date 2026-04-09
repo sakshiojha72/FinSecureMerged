@@ -7,10 +7,11 @@ import com.ds.app.dto.request.ClaimStatusUpdateDTO;
 import com.ds.app.dto.response.ClaimResponseDTO;
 import com.ds.app.enums.ClaimStatus;
 import com.ds.app.exception.ResourceNotFoundException;
+import com.ds.app.exception.ResourceNotFoundException2;
 
 public interface InsuranceClaimService {
     // employee raises a claim against their active insurance
-    ClaimResponseDTO raiseClaim(ClaimRequestDTO dto, Long employeeId) throws ResourceNotFoundException;
+    ClaimResponseDTO raiseClaim(ClaimRequestDTO dto, Long employeeId) throws ResourceNotFoundException2;
 
     // admin views all claims
     List<ClaimResponseDTO> getAllClaims(ClaimStatus status);
@@ -19,7 +20,7 @@ public interface InsuranceClaimService {
     List<ClaimResponseDTO> getEmployeeClaims(Long employeeId);
 
     // admin approves or rejects a claim
-    ClaimResponseDTO updateClaimStatus(ClaimStatusUpdateDTO dto) throws ResourceNotFoundException;
+    ClaimResponseDTO updateClaimStatus(ClaimStatusUpdateDTO dto) throws ResourceNotFoundException2;
 
 
 }

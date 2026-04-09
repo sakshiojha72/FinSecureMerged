@@ -8,15 +8,24 @@ import org.springframework.stereotype.Service;
 
 import com.ds.app.dto.response.EmployeeTopUpResponseDTO;
 import com.ds.app.dto.response.InsuranceSummaryDTO;
+
+import com.ds.app.dto.response.TopUpPlanResponseDTO;
+
 import com.ds.app.entity.Employee;
 import com.ds.app.entity.EmployeeInsurance;
 import com.ds.app.entity.EmployeeTopUp;
 import com.ds.app.enums.InsuranceStatus;
+
 import com.ds.app.exception.ResourceNotFoundException;
+import com.ds.app.exception.ResourceNotFoundException2;
 import com.ds.app.repository.EmployeeInsuranceRepository;
 import com.ds.app.repository.EmployeeRepository;
 import com.ds.app.repository.EmployeeTopUpRepository;
 import com.ds.app.service.InsuranceSummaryService;
+
+
+import lombok.RequiredArgsConstructor;
+
 
 @Service
 public class InsuranceSummaryServiceImpl implements InsuranceSummaryService {
@@ -34,12 +43,12 @@ public class InsuranceSummaryServiceImpl implements InsuranceSummaryService {
     public InsuranceSummaryDTO getInsuranceSummary(Long employeeId) {
 
         Employee employee = employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new ResourceNotFoundException(
+                .orElseThrow(() -> new ResourceNotFoundException2(
                         "Employee not found with id: " + employeeId));
 
         EmployeeInsurance insurance = employeeInsuranceRepository
                 .findByEmployee_UserIdAndStatus(employeeId, InsuranceStatus.ACTIVE)
-                .orElseThrow(() -> new ResourceNotFoundException(
+                .orElseThrow(() -> new ResourceNotFoundException2(
                         "No active insurance found for this employee"));
 
         List<EmployeeTopUp> activeTopUps = employeeTopUpRepository
@@ -55,6 +64,17 @@ public class InsuranceSummaryServiceImpl implements InsuranceSummaryService {
                 .mapToDouble(t -> t.getTopUpPlan().getAdditionalCoverage())
                 .sum();
 
+        // full summary response
+        InsuranceSummaryDTO summary = new InsuranceSummaryDTO();
+        summary.setEmployeeId(employee.getUserId());
+        summary.setEmployeeName(employee.getFirstName()+" "+employee.getLastName());
+        summary.setEmployeeInsuranceId(insurance.getId());
+        summary.setBasePlanName(
+            insurance.getInsurancePlan().getPlanName()
+        );
+        summary.setBaseCoverageAmount(
+            insurance.getInsurancePlan().getCoverageAmount()
+        );
         String firstName = employee.getFirstName();
         String lastName  = employee.getLastName();
         String fullName = (firstName != null && !firstName.isBlank()
@@ -62,19 +82,15 @@ public class InsuranceSummaryServiceImpl implements InsuranceSummaryService {
                 ? firstName + " " + lastName
                 : employee.getUsername();
 
-        InsuranceSummaryDTO summary = new InsuranceSummaryDTO();
-        summary.setEmployeeId(employee.getUserId());
-        summary.setEmployeeName(fullName);
-        summary.setEmployeeInsuranceId(insurance.getId());
-        summary.setBasePlanName(insurance.getInsurancePlan().getPlanName());
-        summary.setBaseCoverageAmount(insurance.getInsurancePlan().getCoverageAmount());
         summary.setExpiryDate(insurance.getExpiryDate());
         summary.setInsuranceStatus(insurance.getStatus());
         summary.setActiveTopUps(topUpDTOs);
         summary.setTotalCoverageAmount(totalCoverage);
 
-        return summary;
+       return summary;
+
     }
+    
 
     private EmployeeTopUpResponseDTO mapToTopUpResponse(
             EmployeeTopUp topUp, Employee employee) {
@@ -98,6 +114,8 @@ public class InsuranceSummaryServiceImpl implements InsuranceSummaryService {
         dto.setExpiryDate(topUp.getExpiryDate());
         dto.setStatus(topUp.getStatus());
         dto.setCreatedAt(topUp.getCreatedAt());
+
         return dto;
     }
+     
 }

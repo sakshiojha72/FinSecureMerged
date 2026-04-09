@@ -22,7 +22,7 @@ public class CompanyServiceImpl implements CompanyService {
     @Autowired private iCompanyRepository companyRepo;
 
     //  entity → response DTO---------
-    
+
     public CompanyResponseDTO toResponse(Company c) {
         CompanyResponseDTO res = new CompanyResponseDTO();
         res.setId(c.getId());
@@ -86,11 +86,9 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     // ---- internal helper — returns raw entity for other services ------------─
-<<<<<<< HEAD
-    
-=======
->>>>>>> 460b80319683eda7f335758b4df8c84147c8d2fe
+
     @Override
+
     public Company findOrThrow(Long id) {
         return companyRepo.findById(id)
                 .orElseThrow(() -> new HrResourceNotFoundException("Company " , id));

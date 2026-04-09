@@ -37,6 +37,7 @@ public class DepartmentServiceImpl  implements DepartmentService{
     }
 
     //create
+
     @Override
     public DepartmentResponseDTO create(DepartmentRequestDTO req) {
         Company company = companyService.findOrThrow(req.getCompanyId());
@@ -52,6 +53,7 @@ public class DepartmentServiceImpl  implements DepartmentService{
     }
 
     // update
+
     @Override
     public DepartmentResponseDTO update(Long id, DepartmentRequestDTO req) {
         Department dept = findOrThrow(id);
@@ -63,6 +65,7 @@ public class DepartmentServiceImpl  implements DepartmentService{
     }
 
     //--- get all---------------------
+
     @Override
     public List<DepartmentResponseDTO> getAll() {
         return departmentRepo.findAll().stream()
@@ -70,12 +73,15 @@ public class DepartmentServiceImpl  implements DepartmentService{
     }
 
     //--- get by id--------------------
+
     @Override
+
     public DepartmentResponseDTO getById(Long id) {
         return toResponse(findOrThrow(id));
     }
 
     //--- get by company-----------------
+
     @Override
     public List<DepartmentResponseDTO> getByCompany(Long companyId) {
         return departmentRepo.findByCompany(companyService.findOrThrow(companyId))
@@ -84,6 +90,7 @@ public class DepartmentServiceImpl  implements DepartmentService{
     
     
     //update status (ACTIVE/INACTIVE)
+
     @Override
     public DepartmentResponseDTO updateStatus(Long id, String status) {
         if (!status.equals("ACTIVE") && !status.equals("INACTIVE"))
@@ -96,7 +103,8 @@ public class DepartmentServiceImpl  implements DepartmentService{
    
 
 
-    @Override
+
+
     //--- internal helper-----------------------
     @Override
     public Department findOrThrow(Long id) {

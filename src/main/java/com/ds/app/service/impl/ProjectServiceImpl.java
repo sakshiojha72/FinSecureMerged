@@ -1,5 +1,5 @@
 package com.ds.app.service.impl;
-
+ 
 import com.ds.app.dto.request.ProjectRequestDTO;
 import com.ds.app.dto.response.ProjectResponseDTO;
 import com.ds.app.entity.Project;
@@ -10,22 +10,21 @@ import com.ds.app.repository.iProjectRepository;
 import com.ds.app.service.CompanyService;
 import com.ds.app.service.DepartmentService;
 import com.ds.app.service.ProjectService;
-
+ 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+ 
 import java.util.List;
 import java.util.stream.Collectors;
-
+ 
 @Service
 public class ProjectServiceImpl implements ProjectService{
-
+ 
     @Autowired private iProjectRepository projectRepo;
     @Autowired private CompanyService companyService;
     @Autowired private DepartmentService departmentService;
-
+ 
     // ── entity → response DTO
-    
     public ProjectResponseDTO toResponse(Project p) {
         ProjectResponseDTO res = new ProjectResponseDTO();
         res.setId(p.getId());
@@ -39,7 +38,7 @@ public class ProjectServiceImpl implements ProjectService{
         res.setDepartmentName(p.getDepartment() != null ? p.getDepartment().getName() : null);
         return res;
     }
-
+ 
     // ── create
     @Override
     public ProjectResponseDTO create(ProjectRequestDTO req) {
@@ -52,7 +51,7 @@ public class ProjectServiceImpl implements ProjectService{
         project.setEndDate(req.getEndDate());
         return toResponse(projectRepo.save(project));
     }
-
+ 
     // ── update 
     @Override
     public ProjectResponseDTO update(Long id, ProjectRequestDTO req) {
@@ -65,28 +64,28 @@ public class ProjectServiceImpl implements ProjectService{
         if (req.getDepartmentId() != null) project.setDepartment(departmentService.findOrThrow(req.getDepartmentId()));
         return toResponse(projectRepo.save(project));
     }
-
+ 
     // ── get all 
     @Override
     public List<ProjectResponseDTO> getAll() {
         return projectRepo.findAll().stream()
                 .map(this::toResponse).collect(Collectors.toList());
     }
-
+ 
     // ── get by id 
     @Override
     public ProjectResponseDTO getById(Long id) {
         return toResponse(findOrThrow(id));
     }
-
+ 
     // ── get by company 
     @Override
     public List<ProjectResponseDTO> getByCompany(Long companyId) {
         return projectRepo.findByCompany(companyService.findOrThrow(companyId))
                 .stream().map(this::toResponse).collect(Collectors.toList());
     }
-    
 
+ 
     // update status
     @Override
     public ProjectResponseDTO updateStatus(Long id, String status) {
@@ -96,9 +95,8 @@ public class ProjectServiceImpl implements ProjectService{
         project.setStatus(status);
         return toResponse(projectRepo.save(project));
     }
-
-
-
+ 
+ 
     // -- internal helper 
     @Override
     public Project findOrThrow(Long id) {

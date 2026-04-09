@@ -39,7 +39,9 @@ import static org.mockito.Mockito.*;
 @DisplayName("AllocationServiceImpl Tests")
 class AllocationServiceImplTest {
 
-    @InjectMocks private AllocationService allocationService;
+
+    @InjectMocks private AllocationServiceImpl allocationService;
+
 
     @Mock private iEmployeeRepository employeeRepo;
     @Mock private EmployeeService employeeService;

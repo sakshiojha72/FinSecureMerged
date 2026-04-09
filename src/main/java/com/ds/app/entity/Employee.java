@@ -3,7 +3,10 @@ package com.ds.app.entity;
 import com.ds.app.enums.CertificationStatus;
 import com.ds.app.enums.EmployeeExperience;
 import com.ds.app.enums.Status;
+
+
 import com.ds.app.enums.UserRole;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.CascadeType;
@@ -17,7 +20,10 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
+
+
 import lombok.Data;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,7 +35,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+
+@Getter
+@Setter
+
 @Data
+
 @NoArgsConstructor
 @PrimaryKeyJoinColumn(name = "user_id")
 @EqualsAndHashCode(
@@ -78,7 +89,11 @@ public class Employee extends AppUser {
     private String lastName;
 
     @Column(nullable = false)
-    private String email;
+
+    private String email ;
+
+  
+
 
     private Boolean isEscalated = Boolean.FALSE;
 
@@ -158,6 +173,52 @@ public class Employee extends AppUser {
     @JsonIgnore
     private List<Appraisal> appraisals = new ArrayList<>();
 
+    
+    
+ // ------------- Changes made for Tarushi Start -------------------------------
+    
+  //boolean isAssetEscalated=false; 
+  	@Column(name="has_active_asset_escalation",nullable=false)
+  	private Boolean hasActiveAssetEscalation=false;
+  	
+  	@OneToMany(mappedBy = "employee")
+  	private List<AssetAllocation> assetAllocations;
+      
+  	@OneToMany(mappedBy = "employee")
+      private List<AssetIssue> assetIssues;
+      
+  	
+  	@OneToMany(mappedBy = "employee")
+      private List<AssetEscalation> assetEscalations;
+  	
+  	
+     
+
+  	public Boolean isHasActiveAssetEscalation() {
+  		return hasActiveAssetEscalation;
+  	}
+
+  	public void setHasActiveAssetEscalation(Boolean hasActiveAssetEscalation) {
+  		this.hasActiveAssetEscalation = hasActiveAssetEscalation;
+  	}
+    
+    
+    
+ // ------------- Changes made for Tarushi END -------------------------------
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
     /* ===================== Convenience Getters ===================== */
     public Long getCompanyId() {
         return company != null ? company.getId() : null;
@@ -170,6 +231,9 @@ public class Employee extends AppUser {
     public Long getProjectId() {
         return project != null ? project.getId() : null;
     }
+
+    
+    
  // ADD THIS CONSTRUCTOR inside Employee class
 
     public Employee(String username,
@@ -186,4 +250,5 @@ public class Employee extends AppUser {
         this.lastName = lastName;
         this.employeeCode = employeeCode;
     }
+
 }

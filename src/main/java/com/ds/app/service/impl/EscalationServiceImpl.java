@@ -34,7 +34,9 @@ public class EscalationServiceImpl implements EscalationService {
     @Autowired private EmployeeService employeeService;
     @Autowired private EmailService emailService;
    
+
     @Override
+
     public EscalationResponseDTO raise(EscalationRequestDTO req,
                                        Long raisedByUserId, String role) {
 
@@ -78,6 +80,7 @@ public class EscalationServiceImpl implements EscalationService {
     }
 
     // HR / Admin / Manager — full escalation list, paginated
+
     @Override
     public Map<String, Object> getAll(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("raisedAt").descending());
@@ -86,7 +89,9 @@ public class EscalationServiceImpl implements EscalationService {
     }
 
     // get escalations for one employee — role decides what is returned
+
     @Override
+
     public Map<String, Object> getForEmployee(Long targetUserId, String role, int page, int size) {
         Employee target = employeeService.findOrThrow(targetUserId);
         Pageable pageable = PageRequest.of(page, size, Sort.by("raisedAt").descending());
@@ -111,7 +116,9 @@ public class EscalationServiceImpl implements EscalationService {
     }
 
     // update status: OPEN → IN_PROGRESS → RESOLVED
+
     @Override
+
     public EscalationResponseDTO updateStatus(Long escalationId, String newStatus) {
         Escalation esc = escalationRepo.findById(escalationId)
                 .orElseThrow(() -> new HrResourceNotFoundException("Escalation" , escalationId));
@@ -142,7 +149,7 @@ public class EscalationServiceImpl implements EscalationService {
     }
 
     // entity ->response dto
-    
+
     private EscalationResponseDTO toResponse(Escalation esc) {
         EscalationResponseDTO res = new EscalationResponseDTO();
         res.setId(esc.getId());

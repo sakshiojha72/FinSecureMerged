@@ -1,5 +1,5 @@
 package com.ds.app;
-
+ 
 import com.ds.app.entity.*;
 import com.ds.app.enums.*;
 import com.ds.app.repository.*;
@@ -7,29 +7,24 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
+ 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
-
+ 
 @Configuration
 public class FinanceDataLoader {
-
+ 
 	@Bean
-	CommandLineRunner loadData(
-			iAppUserRepository userRepo,
-			EmployeeRepository employeeRepo,
-			PasswordEncoder passwordEncoder,
-			FinanceBankRepository financeBankRepo,
-			FinanceInvestmentRepository financeInvestmentRepo,
-			EmployeeBankAccountRepository employeeBankRepo,
-			EmployeeCardRepository employeeCardRepo,
-			EmployeeInvestmentRepository employeeInvestmentRepo,
-			SalaryJobRepository salaryJobRepo,
+	CommandLineRunner loadData(iAppUserRepository userRepo, EmployeeRepository employeeRepo,
+			PasswordEncoder passwordEncoder, FinanceBankRepository financeBankRepo,
+			FinanceInvestmentRepository financeInvestmentRepo, EmployeeBankAccountRepository employeeBankRepo,
+			EmployeeCardRepository employeeCardRepo, EmployeeInvestmentRepository employeeInvestmentRepo,
+			CompanyRepository companyRepository, SalaryJobRepository salaryJobRepo,
 			SalaryRecordRepository salaryRecordRepo) {
-
+ 
 		return args -> {
-			
+ 
 			// ── ADMIN ─────────────────────────────────────────────────────────
 			if (!userRepo.existsByUsername("admin")) {
 				AppUser admin = new AppUser();
@@ -39,7 +34,7 @@ public class FinanceDataLoader {
 				userRepo.save(admin);
 				System.out.println(" Admin created — admin / admin123");
 			}
-
+ 
 			// ── FINANCE ───────────────────────────────────────────────────────
 			if (!employeeRepo.existsByUsername("finance")) {
 				Employee finance = new Employee();
@@ -55,7 +50,34 @@ public class FinanceDataLoader {
 				employeeRepo.save(finance);
 				System.out.println(" Finance created — finance / finance123");
 			}
-
+			if (!companyRepository.existsByName("TCS")) {
+				Company company = new Company();
+				company.setCode("TCS123");
+				company.setName("TCS");
+				company.setRestrictsInvestment(true);
+				company.setStatus("INACTIVE");
+				  companyRepository.save(company); 
+			}
+			if (!companyRepository.existsByName("WIPRO")) {
+				Company company = new Company();
+				company.setCode("WIPRO123");
+				company.setName("WIPRO");
+				company.setRestrictsInvestment(false);
+				company.setStatus("INACTIVE");
+				  companyRepository.save(company); 
+			}
+			if (!companyRepository.existsByName("HCL")) {
+				Company company = new Company();
+				company.setCode("HCL123");
+				company.setName("HCL");
+				company.setRestrictsInvestment(false);
+				company.setStatus("INACTIVE");
+				  companyRepository.save(company); 
+			}
+			Company tcs   = companyRepository.findByName("TCS").orElseThrow();
+			Company wipro = companyRepository.findByName("WIPRO").orElseThrow();
+			Company hcl   = companyRepository.findByName("HCL").orElseThrow();
+ 
 			// ── HR ────────────────────────────────────────────────────────────
 			if (!employeeRepo.existsByUsername("hr")) {
 				Employee hr = new Employee();
@@ -71,7 +93,7 @@ public class FinanceDataLoader {
 				employeeRepo.save(hr);
 				System.out.println(" HR created — hr / hr123");
 			}
-
+ 
 			// ── EMPLOYEE 1 — RAHUL ────────────────────────────────────────────
 			Employee rahul;
 			if (!employeeRepo.existsByUsername("rahul")) {
@@ -84,6 +106,7 @@ public class FinanceDataLoader {
 				emp1.setLastName("Verma");
 				emp1.setCurrentSalary(60000.0);
 				emp1.setEmployeeCode("EMP001");
+				emp1.setCompany(tcs);
 				emp1.setStatus(Status.ACTIVE);
 				rahul = employeeRepo.save(emp1);
 				System.out.println(" Employee 1 created — rahul / rahul123");
@@ -91,6 +114,7 @@ public class FinanceDataLoader {
 				rahul = employeeRepo.findByUsername("rahul").orElseThrow(); // ✅ FIXED
 			}
 
+ 
 			// ── EMPLOYEE 2 — SNEHA ────────────────────────────────────────────
 			Employee sneha;
 			if (!employeeRepo.existsByUsername("sneha")) {
@@ -103,13 +127,14 @@ public class FinanceDataLoader {
 				emp2.setCurrentSalary(55000.0);
 				emp2.setEmail("sharmayatin0882@gmail.com");
 				emp2.setEmployeeCode("EMP002");
+				emp2.setCompany(wipro);
 				emp2.setStatus(Status.ACTIVE);
 				sneha = employeeRepo.save(emp2);
 				System.out.println(" Employee 2 created — sneha / sneha123");
 			} else {
 				sneha = employeeRepo.findByUsername("sneha").orElseThrow(); // ✅ FIXED
 			}
-
+ 
 			// ── EMPLOYEE 3 — INACTIVE ─────────────────────────────────────────
 			if (!employeeRepo.existsByUsername("inactive_emp")) {
 				Employee emp3 = new Employee();
@@ -121,11 +146,12 @@ public class FinanceDataLoader {
 				emp3.setCurrentSalary(50000.0);
 				emp3.setEmail("sharmayatin0882@gmail.com");
 				emp3.setEmployeeCode("EMP003");
+				emp3.setCompany(hcl);
 				emp3.setStatus(Status.INACTIVE);
 				employeeRepo.save(emp3);
 				System.out.println(" Inactive employee created — inactive_emp / inactive123");
 			}
-
+ 
 			// ── EMPLOYEE 4 — ASHISH ───────────────────────────────────────────
 			Employee ashish;
 			if (!employeeRepo.existsByUsername("ASHISH")) {
@@ -135,6 +161,7 @@ public class FinanceDataLoader {
 				emp4.setRole(UserRole.EMPLOYEE);
 				emp4.setFirstName("ASHISH");
 				emp4.setLastName("BANSAL");
+				emp4.setCompany(hcl);
 				emp4.setCurrentSalary(50000.0);
 				emp4.setEmail("sharmayatin0882@gmail.com");
 				emp4.setEmployeeCode("EMP004");
@@ -144,7 +171,7 @@ public class FinanceDataLoader {
 			} else {
 				ashish = employeeRepo.findByUsername("ASHISH").orElseThrow(); // ✅ FIXED
 			}
-
+ 
 			// ── EMPLOYEE 5 — SAKSHI ───────────────────────────────────────────
 			if (!employeeRepo.existsByUsername("Sakshi")) {
 				Employee emp5 = new Employee();
@@ -153,6 +180,7 @@ public class FinanceDataLoader {
 				emp5.setRole(UserRole.EMPLOYEE);
 				emp5.setFirstName("Sakshi");
 				emp5.setLastName("Sakshi");
+				emp5.setCompany(wipro);
 				emp5.setCurrentSalary(50000.0);
 				emp5.setEmail("sharmayatin0882@gmail.com");
 				emp5.setEmployeeCode("EMP005");
@@ -160,7 +188,7 @@ public class FinanceDataLoader {
 				employeeRepo.save(emp5);
 				System.out.println(" Employee created — Sakshi / Sakshi123");
 			}
-
+ 
 			// ── EMPLOYEE 6 — SHREYA ───────────────────────────────────────────
 			if (!employeeRepo.existsByUsername("shreya")) {
 				Employee emp6 = new Employee();
@@ -170,16 +198,17 @@ public class FinanceDataLoader {
 				emp6.setFirstName("shreya");
 				emp6.setLastName("singhal");
 				emp6.setCurrentSalary(50000.0);
+				emp6.setCompany(tcs);
 				emp6.setEmail("sharmayatin0882@gmail.com");
 				emp6.setEmployeeCode("EMP006");
 				emp6.setStatus(Status.ACTIVE);
 				employeeRepo.save(emp6);
 				System.out.println(" Employee created — shreya / shreya123");
 			}
-
+ 
 			// ── FINANCE USER (for addedBy references) ─────────────────────────
 			Employee financeUser = employeeRepo.findByUsername("finance").orElseThrow(); // ✅ FIXED
-
+ 
 			// ── FINANCE BANK ACCOUNTS ─────────────────────────────────────────
 			FinanceBankAccount hdfc;
 			if (!financeBankRepo.existsBybankCode("HDFC")) {
@@ -193,7 +222,7 @@ public class FinanceDataLoader {
 			} else {
 				hdfc = financeBankRepo.findBybankCode("HDFC").orElseThrow();
 			}
-
+ 
 			FinanceBankAccount icici;
 			if (!financeBankRepo.existsBybankCode("ICICI")) {
 				icici = new FinanceBankAccount();
@@ -207,6 +236,7 @@ public class FinanceDataLoader {
 				icici = financeBankRepo.findBybankCode("ICICI").orElseThrow();
 			}
 
+ 
 			FinanceBankAccount sbi;
 			if (!financeBankRepo.existsBybankCode("SBI")) {
 				sbi = new FinanceBankAccount();
@@ -219,203 +249,136 @@ public class FinanceDataLoader {
 			} else {
 				sbi = financeBankRepo.findBybankCode("SBI").orElseThrow();
 			}
-
+ 
 			// ── FINANCE INVESTMENTS ───────────────────────────────────────────
 			FinanceInvestment nifty50;
 			if (!financeInvestmentRepo.existsByFundCode("AXIS-N50")) {
-				nifty50 = FinanceInvestment.builder()
-						.fundName("Axis Nifty 50 Index Fund")
-						.fundCode("AXIS-N50")
-						.category("Large Cap")
-						.status(FundStatus.WHITELISTED)
-						.addedBy(financeUser.getUserId())
-						.build();
+				nifty50 = FinanceInvestment.builder().fundName("Axis Nifty 50 Index Fund").fundCode("AXIS-N50")
+						.category("Large Cap").status(FundStatus.WHITELISTED).addedBy(financeUser.getUserId()).build();
 				nifty50 = financeInvestmentRepo.save(nifty50);
 				System.out.println(" FinanceInvestment created — Axis Nifty 50 Index Fund");
 			} else {
 				nifty50 = financeInvestmentRepo.findByFundCode("AXIS-N50").orElseThrow();
 			}
-
+ 
 			FinanceInvestment mirae;
 			if (!financeInvestmentRepo.existsByFundCode("MIR-LC")) {
-				mirae = FinanceInvestment.builder()
-						.fundName("Mirae Asset Large Cap Fund")
-						.fundCode("MIR-LC")
-						.category("Large Cap")
-						.status(FundStatus.WHITELISTED)
-						.addedBy(financeUser.getUserId())
-						.build();
+				mirae = FinanceInvestment.builder().fundName("Mirae Asset Large Cap Fund").fundCode("MIR-LC")
+						.category("Large Cap").status(FundStatus.WHITELISTED).addedBy(financeUser.getUserId()).build();
 				mirae = financeInvestmentRepo.save(mirae);
 				System.out.println(" FinanceInvestment created — Mirae Asset Large Cap Fund");
 			} else {
 				mirae = financeInvestmentRepo.findByFundCode("MIR-LC").orElseThrow();
 			}
-
+ 
 			FinanceInvestment ppfas;
 			if (!financeInvestmentRepo.existsByFundCode("PPFAS-FLEX")) {
-				ppfas = FinanceInvestment.builder()
-						.fundName("Parag Parikh Flexi Cap Fund")
-						.fundCode("PPFAS-FLEX")
-						.category("Flexi Cap")
-						.status(FundStatus.WHITELISTED)
-						.addedBy(financeUser.getUserId())
-						.build();
+				ppfas = FinanceInvestment.builder().fundName("Parag Parikh Flexi Cap Fund").fundCode("PPFAS-FLEX")
+						.category("Flexi Cap").status(FundStatus.WHITELISTED).addedBy(financeUser.getUserId()).build();
 				ppfas = financeInvestmentRepo.save(ppfas);
 				System.out.println(" FinanceInvestment created — Parag Parikh Flexi Cap Fund");
 			} else {
 				ppfas = financeInvestmentRepo.findByFundCode("PPFAS-FLEX").orElseThrow();
 			}
-
+ 
 			// ── EMPLOYEE BANK ACCOUNTS ────────────────────────────────────────
 			if (!employeeBankRepo.existsByEmployee_UserId(rahul.getUserId())) {
-				EmployeeBankAccount rahulBank = EmployeeBankAccount.builder()
-						.employee(rahul)
-						.bank(hdfc)
-						.accountNumber("99000001234")
-						.ifscCode("HDFC0001234")
-						.accountHolderName("Rahul Verma")
-						.validationStatus(BankValidationStatus.APPROVED)
-						.reviewNote("Pre-seeded; verified.")
-						.modifiedToday(0)
-						.build();
+				EmployeeBankAccount rahulBank = EmployeeBankAccount.builder().employee(rahul).bank(hdfc)
+						.accountNumber("99000001234").ifscCode("HDFC0001234").accountHolderName("Rahul Verma")
+						.validationStatus(BankValidationStatus.APPROVED).reviewNote("Pre-seeded; verified.")
+						.modifiedToday(0).build();
 				employeeBankRepo.save(rahulBank);
 				System.out.println(" EmployeeBankAccount created — Rahul → HDFC");
 			}
-
+ 
 			if (!employeeBankRepo.existsByEmployee_UserId(sneha.getUserId())) {
-				EmployeeBankAccount snehaBank = EmployeeBankAccount.builder()
-						.employee(sneha)
-						.bank(icici)
-						.accountNumber("123400005678")
-						.ifscCode("ICIC0005678")
-						.accountHolderName("Sneha Patel")
-						.validationStatus(BankValidationStatus.PENDING)
-						.modifiedToday(0)
-						.build();
+				EmployeeBankAccount snehaBank = EmployeeBankAccount.builder().employee(sneha).bank(icici)
+						.accountNumber("123400005678").ifscCode("ICIC0005678").accountHolderName("Sneha Patel")
+						.validationStatus(BankValidationStatus.PENDING).modifiedToday(0).build();
 				employeeBankRepo.save(snehaBank);
 				System.out.println(" EmployeeBankAccount created — Sneha → ICICI (PENDING)");
 			}
-			
-
+ 
 			if (!employeeBankRepo.existsByEmployee_UserId(ashish.getUserId())) {
-				EmployeeBankAccount ashishBank = EmployeeBankAccount.builder()
-						.employee(ashish)
-						.bank(sbi)
-						.accountNumber("678818123091")
-						.ifscCode("123220009999")
-						.accountHolderName("ASHISH BANSAL")
-						.validationStatus(BankValidationStatus.APPROVED)
-						.reviewNote("Pre-seeded; verified.")
-						.modifiedToday(0)
-						.build();
+				EmployeeBankAccount ashishBank = EmployeeBankAccount.builder().employee(ashish).bank(sbi)
+						.accountNumber("678818123091").ifscCode("123220009999").accountHolderName("ASHISH BANSAL")
+						.validationStatus(BankValidationStatus.APPROVED).reviewNote("Pre-seeded; verified.")
+						.modifiedToday(0).build();
 				employeeBankRepo.save(ashishBank);
 				System.out.println(" EmployeeBankAccount created — ASHISH → SBI");
 			}
-
+ 
 			// ── EMPLOYEE CARDS ────────────────────────────────────────────────
-			if (!employeeCardRepo.existsByEmployee_UserIdAndCardTypeAndCardStatus(
-					rahul.getUserId(), CardType.DEBIT, CardStatus.ACTIVE)) {
-				EmployeeCard rahulDebit = EmployeeCard.builder()
-						.employee(rahul)
-						.cardNumber("982818123409")
-						.cardType(CardType.DEBIT)
-						.expiryDate(YearMonth.of(2027, 6))
-						.cardStatus(CardStatus.ACTIVE)
-						.issuedAt(LocalDate.of(2023, 6, 1))
-						.build();
+			if (!employeeCardRepo.existsByEmployee_UserIdAndCardTypeAndCardStatus(rahul.getUserId(), CardType.DEBIT,
+					CardStatus.ACTIVE)) {
+				EmployeeCard rahulDebit = EmployeeCard.builder().employee(rahul).cardNumber("982818123409")
+						.cardType(CardType.DEBIT).expiryDate(YearMonth.of(2027, 6)).cardStatus(CardStatus.ACTIVE)
+						.issuedAt(LocalDate.of(2023, 6, 1)).build();
 				employeeCardRepo.save(rahulDebit);
 				System.out.println(" EmployeeCard created — Rahul DEBIT");
 			}
-
-			if (!employeeCardRepo.existsByEmployee_UserIdAndCardTypeAndCardStatus(
-					rahul.getUserId(), CardType.CREDIT, CardStatus.ACTIVE)) {
-				EmployeeCard rahulCredit = EmployeeCard.builder()
-						.employee(rahul)
-						.cardNumber("82818125678")
-						.cardType(CardType.CREDIT)
-						.expiryDate(YearMonth.of(2026, 12))
-						.cardStatus(CardStatus.ACTIVE)
-						.issuedAt(LocalDate.of(2022, 12, 15))
-						.build();
+ 
+			if (!employeeCardRepo.existsByEmployee_UserIdAndCardTypeAndCardStatus(rahul.getUserId(), CardType.CREDIT,
+					CardStatus.ACTIVE)) {
+				EmployeeCard rahulCredit = EmployeeCard.builder().employee(rahul).cardNumber("82818125678")
+						.cardType(CardType.CREDIT).expiryDate(YearMonth.of(2026, 12)).cardStatus(CardStatus.ACTIVE)
+						.issuedAt(LocalDate.of(2022, 12, 15)).build();
 				employeeCardRepo.save(rahulCredit);
 				System.out.println(" EmployeeCard created — Rahul CREDIT");
 			}
-
-			if (!employeeCardRepo.existsByEmployee_UserIdAndCardTypeAndCardStatus(
-					sneha.getUserId(), CardType.DEBIT, CardStatus.ACTIVE)) {
-				EmployeeCard snehaDebit = EmployeeCard.builder()
-						.employee(sneha)
-						.cardNumber("90818129999")
-						.cardType(CardType.DEBIT)
-						.expiryDate(YearMonth.of(2028, 3))
-						.cardStatus(CardStatus.ACTIVE)
-						.issuedAt(LocalDate.of(2024, 3, 10))
-						.build();
+ 
+			if (!employeeCardRepo.existsByEmployee_UserIdAndCardTypeAndCardStatus(sneha.getUserId(), CardType.DEBIT,
+					CardStatus.ACTIVE)) {
+				EmployeeCard snehaDebit = EmployeeCard.builder().employee(sneha).cardNumber("90818129999")
+						.cardType(CardType.DEBIT).expiryDate(YearMonth.of(2028, 3)).cardStatus(CardStatus.ACTIVE)
+						.issuedAt(LocalDate.of(2024, 3, 10)).build();
 				employeeCardRepo.save(snehaDebit);
 				System.out.println(" EmployeeCard created — Sneha DEBIT");
 			}
-
+ 
 			// ── EMPLOYEE INVESTMENTS ──────────────────────────────────────────
-			if (!employeeInvestmentRepo.existsByEmployee_UserIdAndMutualFund_MutualFundId(
-					rahul.getUserId(), nifty50.getMutualFundId())) {
-				EmployeeInvestment rahulMF = EmployeeInvestment.builder()
-						.employee(rahul)
-						.investmentType(InvestmentType.MUTUAL_FUND)
-						.mutualFund(nifty50)
-						.declaredAmount(10000.0)
-						.complianceStatus(ComplianceStatus.COMPLIANT)
-						.reviewNote("Pre-seeded; auto-approved.")
-						.reviewedBy(financeUser.getUserId())
-						.build();
+			if (!employeeInvestmentRepo.existsByEmployee_UserIdAndMutualFund_MutualFundId(rahul.getUserId(),
+					nifty50.getMutualFundId())) {
+				EmployeeInvestment rahulMF = EmployeeInvestment.builder().employee(rahul)
+						.investmentType(InvestmentType.MUTUAL_FUND).mutualFund(nifty50).declaredAmount(10000.0)
+						.complianceStatus(ComplianceStatus.COMPLIANT).reviewNote("Pre-seeded; auto-approved.")
+						.reviewedBy(financeUser.getUserId()).build();
 				employeeInvestmentRepo.save(rahulMF);
 				System.out.println(" EmployeeInvestment created — Rahul → Axis Nifty 50 (MUTUAL_FUND)");
 			}
-
-			if (!employeeInvestmentRepo.existsByEmployee_UserIdAndSecurityName(
-					rahul.getUserId(), "Reliance Industries Ltd")) {
-				EmployeeInvestment rahulEquity = EmployeeInvestment.builder()
-						.employee(rahul)
-						.investmentType(InvestmentType.DIRECT_EQUITY)
-						.securityName("Reliance Industries Ltd")
-						.declaredAmount(25000.0)
-						.complianceStatus(ComplianceStatus.PENDING_REVIEW)
-						.build();
+ 
+			if (!employeeInvestmentRepo.existsByEmployee_UserIdAndSecurityName(rahul.getUserId(),
+					"Reliance Industries Ltd")) {
+				EmployeeInvestment rahulEquity = EmployeeInvestment.builder().employee(rahul)
+						.investmentType(InvestmentType.DIRECT_EQUITY).securityName("Reliance Industries Ltd")
+						.declaredAmount(25000.0).complianceStatus(ComplianceStatus.PENDING_REVIEW).build();
 				employeeInvestmentRepo.save(rahulEquity);
 				System.out.println(" EmployeeInvestment created — Rahul → Reliance (DIRECT_EQUITY, PENDING)");
-				
+ 
 			}
-
-			if (!employeeInvestmentRepo.existsByEmployee_UserIdAndMutualFund_MutualFundId(
-					sneha.getUserId(), mirae.getMutualFundId())) {
-				EmployeeInvestment snehaMF = EmployeeInvestment.builder()
-						.employee(sneha)
-						.investmentType(InvestmentType.MUTUAL_FUND)
-						.mutualFund(mirae)
-						.declaredAmount(5000.0)
-						.complianceStatus(ComplianceStatus.PENDING_REVIEW)
-						.build();
+ 
+			if (!employeeInvestmentRepo.existsByEmployee_UserIdAndMutualFund_MutualFundId(sneha.getUserId(),
+					mirae.getMutualFundId())) {
+				EmployeeInvestment snehaMF = EmployeeInvestment.builder().employee(sneha)
+						.investmentType(InvestmentType.MUTUAL_FUND).mutualFund(mirae).declaredAmount(5000.0)
+						.complianceStatus(ComplianceStatus.PENDING_REVIEW).build();
 				employeeInvestmentRepo.save(snehaMF);
 				System.out.println(" EmployeeInvestment created — Sneha → Mirae Large Cap (MUTUAL_FUND, PENDING)");
 			}
-
-			if (!employeeInvestmentRepo.existsByEmployee_UserIdAndMutualFund_MutualFundId(
-					ashish.getUserId(), ppfas.getMutualFundId())) {
-				EmployeeInvestment ashishMF = EmployeeInvestment.builder()
-						.employee(ashish)
-						.investmentType(InvestmentType.MUTUAL_FUND)
-						.mutualFund(ppfas)
-						.declaredAmount(15000.0)
-						.complianceStatus(ComplianceStatus.COMPLIANT)
-						.reviewNote("Pre-seeded; auto-approved.")
-						.reviewedBy(financeUser.getUserId())
-						.build();
+ 
+			if (!employeeInvestmentRepo.existsByEmployee_UserIdAndMutualFund_MutualFundId(ashish.getUserId(),
+					ppfas.getMutualFundId())) {
+				EmployeeInvestment ashishMF = EmployeeInvestment.builder().employee(ashish)
+						.investmentType(InvestmentType.MUTUAL_FUND).mutualFund(ppfas).declaredAmount(15000.0)
+						.complianceStatus(ComplianceStatus.COMPLIANT).reviewNote("Pre-seeded; auto-approved.")
+						.reviewedBy(financeUser.getUserId()).build();
 				employeeInvestmentRepo.save(ashishMF);
 				System.out.println(" EmployeeInvestment created — ASHISH → Parag Parikh Flexi Cap (MUTUAL_FUND)");
 			}
-
+ 
 			YearMonth feb2025 = YearMonth.of(2025, 2);
 			if (!salaryJobRepo.existsByTargetMonth(feb2025)) {
-
+ 
 				SalaryJob job1 = new SalaryJob();
 				job1.setJobName("Salary Processing — Feb 2025");
 				job1.setTargetMonth(feb2025);
@@ -427,15 +390,14 @@ public class FinanceDataLoader {
 				job1.setCreatedBy(financeUser.getUserId());
 				job1 = salaryJobRepo.save(job1);
 				System.out.println("✅ SalaryJob created — Feb 2025 (COMPLETED)");
-
+ 
 				// Re-fetch bank accounts (may have just been created above)
 				EmployeeBankAccount rahulBank = employeeBankRepo.findByEmployee_UserId(rahul.getUserId()).orElseThrow();
-				EmployeeBankAccount ashishBank = employeeBankRepo.findByEmployee_UserId(ashish.getUserId()).orElseThrow();
-
-
+				EmployeeBankAccount ashishBank = employeeBankRepo.findByEmployee_UserId(ashish.getUserId())
+						.orElseThrow();
+ 
 			}
-
-	
+ 
 		};
 	}
 }

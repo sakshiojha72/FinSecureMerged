@@ -34,6 +34,7 @@ public class AppraisalServiceImpl implements AppraisalService{
     @Autowired private EmailService emailService;
 
     // both saves in one transaction — if one fails, both roll back
+
     @Override
     @Transactional
     public AppraisalResponseDTO initiate(AppraisalRequestDTO req, Long hrUserId) {
@@ -79,8 +80,7 @@ public class AppraisalServiceImpl implements AppraisalService{
         res.put("isLast",      result.isLast());
         return res;
     }
-    
-    
+
     //  entity → response DTO 
     
     private AppraisalResponseDTO toResponse(Appraisal a) {
