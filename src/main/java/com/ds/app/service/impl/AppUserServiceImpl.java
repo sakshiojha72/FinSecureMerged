@@ -24,13 +24,13 @@ public class AppUserServiceImpl implements AppUserService {
     private PasswordEncoder passwordEncoder;
     @Override
     public AppUser registerAppUser(AppUser user) {
-
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        if (user.getRole() == UserRole.EMPLOYEE) {
-
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         if (user.getRole() == UserRole.EMPLOYEE) {
+
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        if (user.getRole() == UserRole.EMPLOYEE) {
+
             Employee employee = new Employee();
             employee.setUsername(user.getUsername());
             employee.setPassword(user.getPassword());
@@ -39,6 +39,7 @@ public class AppUserServiceImpl implements AppUserService {
             employee.setIsAccountLocked(false);
             employee.setFirstName("");
             employee.setLastName("");
+
             
             
             employee.setEmail(user.getUsername() + "@finsecure.com"); // placeholder, not null
@@ -50,6 +51,9 @@ public class AppUserServiceImpl implements AppUserService {
 
 
         }
+
+     
+   
         return appUserRepository.save(user);
     }
 }

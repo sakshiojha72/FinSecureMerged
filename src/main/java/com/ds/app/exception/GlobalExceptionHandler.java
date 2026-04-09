@@ -1,8 +1,11 @@
 package com.ds.app.exception;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -17,138 +20,187 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-	// ----- Tarushi Code Started
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequest(BadRequestException ex) {
+        ErrorResponse error = new ErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST.value());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
 
-	@ExceptionHandler(BadRequestException.class)
-	public ResponseEntity<ErrorResponse> handleBadRequest(BadRequestException ex) {
+    @ExceptionHandler(ResourceNotFoundException2.class)
+    public ResponseEntity<ErrorResponse> handleRequestNotFound_2(ResourceNotFoundException2 ex) {
+        ErrorResponse error = new ErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND.value());
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
 
-		/* using error response , instead of Edxception response */
-		ErrorResponse error = new ErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST.value());
+    @ExceptionHandler(HrResourceNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleNotFound(HrResourceNotFoundException ex) {
+        return build(ex.getStatus(), ex.getErrorCode(), ex.getMessage());
+    }
 
-		return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-	}
+    @ExceptionHandler(HrBusinessRuleException.class)
+    public ResponseEntity<Map<String, Object>> handleBusinessRule(HrBusinessRuleException ex) {
+        return build(ex.getStatus(), ex.getErrorCode(), ex.getMessage());
+    }
 
-	@ExceptionHandler(ResourceNotFoundException2.class)
-	public ResponseEntity<ErrorResponse> handleRequestNotFound_2(ResourceNotFoundException2 ex) {
+    @ExceptionHandler(HrDuplicateResourceException.class)
+    public ResponseEntity<Map<String, Object>> handleDuplicate(HrDuplicateResourceException ex) {
+        return build(ex.getStatus(), ex.getErrorCode(), ex.getMessage());
+    }
 
-		ErrorResponse error = new ErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND.value());
-
-		return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
-	}
-
-	// --- Tarushi Code end -----
-
-	@ExceptionHandler(HrResourceNotFoundException.class)
-	public ResponseEntity<Map<String, Object>> handleNotFound(HrResourceNotFoundException ex) {
-		return build(ex.getStatus(), ex.getErrorCode(), ex.getMessage());
-	}
-
-	// Handles logic-specific errors defined by our business rules(Bhawna)
-	@ExceptionHandler(HrBusinessRuleException.class)
-	public ResponseEntity<Map<String, Object>> handleBusinessRule(HrBusinessRuleException ex) {
-		return build(ex.getStatus(), ex.getErrorCode(), ex.getMessage());
-	}
-
-	// Prevents duplicate entries (e.g., trying to use an existing employee
-	// code)(Bhawna)
-	@ExceptionHandler(HrDuplicateResourceException.class)
-	public ResponseEntity<Map<String, Object>> handleDuplicate(HrDuplicateResourceException ex) {
-		return build(ex.getStatus(), ex.getErrorCode(), ex.getMessage());
-	}
-
-	@ExceptionHandler(BlacklistedBankException.class)
-	public ResponseEntity<String> handleBlacklistedBankException(BlacklistedBankException ex) {
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
-	}
-
-	@ExceptionHandler(ResourceNotFoundException.class)
-	public ResponseEntity<String> handleResourceNotFound(ResourceNotFoundException ex) {
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-	}
-
-	@ExceptionHandler(SalaryJobException.class)
-	public ResponseEntity<String> handleSalaryJobException(SalaryJobException ex) {
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
-	}
-
-	@ExceptionHandler(BankAccountAlreadyRegistered.class)
-	public ResponseEntity<String> handleBankAccountAlreadyRegistered(BankAccountAlreadyRegistered ex) {
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
-	}
-
-	@ExceptionHandler(ResourceAlreadyExistException.class)
-	public ResponseEntity<String> handleResourceAlreadyExist(ResourceAlreadyExistException ex) {
-		return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
-	}
-
-	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<Map<String, String>> handleValidationErrors(MethodArgumentNotValidException ex) {
-		Map<String, String> errors = new HashMap<>();
-		ex.getBindingResult().getFieldErrors()
-				.forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
-	}
-
-	@ExceptionHandler(AuthorizationDeniedException.class)
-	public ResponseEntity<String> handleAuthorizationDenied(AuthorizationDeniedException ex) {
-		return ResponseEntity.status(HttpStatus.FORBIDDEN)
-				.body("Access denied. You are not authorized to perform this action.");
-	}
-
-	@ExceptionHandler(BankAccountLockedException.class)
-	public ResponseEntity<String> handleBankAccountLocked(BankAccountLockedException ex) {
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
-	}
-
-	@ExceptionHandler(InvestmentComplianceException.class)
-	public ResponseEntity<String> handleInvestmentComplianceException(InvestmentComplianceException ex) {
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
-	}
-
-	@ExceptionHandler(IllegalArgumentException.class)
-	public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
-	}
-
-	private ResponseEntity<Map<String, Object>> build(
-            HttpStatus status, String errorCode, String message) {
+    private ResponseEntity<Map<String, Object>> build(HttpStatus status, String errorCode, String message) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", LocalDateTime.now().toString());
-        body.put("status",    status.value());
+        body.put("status", status.value());
         body.put("errorCode", errorCode);
-        body.put("message",   message);
+        body.put("message", message);
         return new ResponseEntity<>(body, status);
     }
 
-	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
-	public ResponseEntity<String> handleEnumMismatch(MethodArgumentTypeMismatchException ex) {
-		String paramName = ex.getName();
-		String invalidValue = String.valueOf(ex.getValue());
+    @ExceptionHandler(BlacklistedBankException.class)
+    public ResponseEntity<String> handleBlacklistedBankException(BlacklistedBankException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
 
-		String message;
-		if (ex.getRequiredType() != null && ex.getRequiredType().isEnum()) {
-			Object[] enumValues = ex.getRequiredType().getEnumConstants();
-			message = "Invalid value '" + invalidValue + "' for '" + paramName + "'. Accepted values: "
-					+ Arrays.toString(enumValues);
-		} else {
-			message = "Invalid value '" + invalidValue + "' for parameter '" + paramName + "'";
-		}
+    @ExceptionHandler(SalaryJobException.class)
+    public ResponseEntity<String> handleSalaryJobException(SalaryJobException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
 
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
-	}
+    @ExceptionHandler(BankAccountAlreadyRegistered.class)
+    public ResponseEntity<String> handleBankAccountAlreadyRegistered(BankAccountAlreadyRegistered ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
 
-	@ExceptionHandler(Exception.class)
-	public ResponseEntity<String> handleGenericException(Exception ex) {
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
-	}
+    @ExceptionHandler(ResourceAlreadyExistException.class)
+    public ResponseEntity<String> handleResourceAlreadyExist(ResourceAlreadyExistException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
 
-	@ExceptionHandler(ConflictException.class)
-	public ResponseEntity<String> handleConflict(ConflictException ex) {
-		return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
-	}
+    @ExceptionHandler(BankAccountLockedException.class)
+    public ResponseEntity<String> handleBankAccountLocked(BankAccountLockedException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
 
-	@ExceptionHandler(BusinessRuleException.class)
-	public ResponseEntity<String> handleBusinessRule(BusinessRuleException ex) {
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
-	}
+    @ExceptionHandler(InvestmentComplianceException.class)
+    public ResponseEntity<String> handleInvestmentComplianceException(InvestmentComplianceException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<String> handleConflict(ConflictException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(BusinessRuleException.class)
+    public ResponseEntity<String> handleBusinessRule(BusinessRuleException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(EmployeeNotFoundException.class)
+    public ResponseEntity<String> handleEmployeeNotFound(EmployeeNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(TrainingNotFoundException.class)
+    public ResponseEntity<String> handleTrainingNotFound(TrainingNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(TrainingNotCompleteException.class)
+    public ResponseEntity<String> handleTrainingNotCompleted(TrainingNotCompleteException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<ExceptionResponse> handleCustomException(CustomException ex) {
+        ExceptionResponse response = new ExceptionResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    private ResponseEntity<ErrorResponse2> buildErrorResponse2(
+            HttpStatus status, String message, String errorCode,
+            Map<String, String> fieldErrors, String path) {
+        ErrorResponse2 body = ErrorResponse2.builder()
+                .timestamp(LocalDateTime.now())
+                .status(status.value())
+                .error(status.getReasonPhrase())
+                .message(message)
+                .path(path)
+                .errorCode(errorCode)
+                .fieldErrors(fieldErrors)
+                .build();
+        return ResponseEntity.status(status).body(body);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse2> handleResourceNotFound(ResourceNotFoundException ex, HttpServletRequest request) {
+        return buildErrorResponse2(HttpStatus.NOT_FOUND, ex.getMessage(), "RESOURCE_NOT_FOUND", null, request.getRequestURI());
+    }
+
+    @ExceptionHandler(InsufficientLeaveBalanceException.class)
+    public ResponseEntity<ErrorResponse2> handleInsufficientLeaveBalance(InsufficientLeaveBalanceException ex, HttpServletRequest request) {
+        return buildErrorResponse2(HttpStatus.BAD_REQUEST, ex.getMessage(), "INSUFFICIENT_LEAVE_BALANCE", null, request.getRequestURI());
+    }
+
+    @ExceptionHandler(InvalidLeaveStateException.class)
+    public ResponseEntity<ErrorResponse2> handleInvalidLeaveState(InvalidLeaveStateException ex, HttpServletRequest request) {
+        return buildErrorResponse2(HttpStatus.CONFLICT, ex.getMessage(), "INVALID_LEAVE_STATE", null, request.getRequestURI());
+    }
+
+    @ExceptionHandler(InvalidTimesheetStateException.class)
+    public ResponseEntity<ErrorResponse2> handleInvalidTimesheetState(InvalidTimesheetStateException ex, HttpServletRequest request) {
+        return buildErrorResponse2(HttpStatus.CONFLICT, ex.getMessage(), "INVALID_TIMESHEET_STATE", null, request.getRequestURI());
+    }
+
+    @ExceptionHandler(DuplicateRegularizationException.class)
+    public ResponseEntity<ErrorResponse2> handleDuplicateRegularization(DuplicateRegularizationException ex, HttpServletRequest request) {
+        return buildErrorResponse2(HttpStatus.CONFLICT, ex.getMessage(), "DUPLICATE_REGULARIZATION", null, request.getRequestURI());
+    }
+
+    @ExceptionHandler(InvalidDateRangeException.class)
+    public ResponseEntity<ErrorResponse2> handleInvalidDateRange(InvalidDateRangeException ex, HttpServletRequest request) {
+        return buildErrorResponse2(HttpStatus.BAD_REQUEST, ex.getMessage(), "INVALID_DATE_RANGE", null, request.getRequestURI());
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ErrorResponse2> handleUnauthorized(ForbiddenException ex, HttpServletRequest request) {
+        return buildErrorResponse2(HttpStatus.FORBIDDEN, ex.getMessage(), "UNAUTHORIZED", null, request.getRequestURI());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse2> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
+        Map<String, String> fieldErrors = new LinkedHashMap<>();
+        for (FieldError fieldError : ex.getBindingResult().getFieldErrors()) {
+            fieldErrors.put(fieldError.getField(), fieldError.getDefaultMessage());
+        }
+        return buildErrorResponse2(HttpStatus.BAD_REQUEST, "Validation failed", "VALIDATION_FAILED", fieldErrors, request.getRequestURI());
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse2> handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest request) {
+        return buildErrorResponse2(HttpStatus.BAD_REQUEST, ex.getMessage(), "BAD_REQUEST", null, request.getRequestURI());
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse2> handleTypeMismatch(MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
+        String message = "Invalid value '" + ex.getValue() + "' for parameter '" + ex.getName() + "'";
+        return buildErrorResponse2(HttpStatus.BAD_REQUEST, message, "INVALID_PARAMETER", null, request.getRequestURI());
+    }
+
+    @ExceptionHandler({AccessDeniedException.class, AuthorizationDeniedException.class})
+    public ResponseEntity<ErrorResponse2> handleAccessDenied(Exception ex) {
+        ErrorResponse2 error = ErrorResponse2.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.FORBIDDEN.value())
+                .error("Forbidden")
+                .message("Access Denied")
+                .errorCode("ACCESS_DENIED")
+                .build();
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleGenericException(Exception ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error occurred: " + ex.getMessage());
+    }
 }

@@ -3,21 +3,37 @@ package com.ds.app.service.impl;
 import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.ds.app.entity.Employee;
+import com.ds.app.entity.Leave;
+import com.ds.app.entity.RegularizationRequest;
+import com.ds.app.entity.Timesheet;
+import com.ds.app.enums.ApprovalStatus;
 import com.ds.app.service.EmailService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 @Async
+public class EmailServiceImpl implements EmailService {
 
-public class EmailServiceImpl implements EmailService{
+    @Autowired
+    private JavaMailSender mailSender;
 
-    @Autowired private JavaMailSender mailSender;
+    @Value("${spring.mail.username}")
+    private String from;
 
+    @Value("${spring.mail.username}")
+    private String fromEmail;
 
+ 
     private void send(String to, String subject, String body) {
         SimpleMailMessage msg = new SimpleMailMessage();
         msg.setTo(to);
@@ -27,11 +43,180 @@ public class EmailServiceImpl implements EmailService{
         mailSender.send(msg);
     }
 
+    @Override
+    public void sendPlainText(String to, String subject, String body) {
+        SimpleMailMessage msg = new SimpleMailMessage();
+        msg.setFrom(from);
+        msg.setTo(to);
+        msg.setSubject(subject);
+        msg.setText(body);
+        mailSender.send(msg);
+    }
 
+    public void sendEmail(String to, String subject, String body) {
+        log.info("Sending email to: {} | Subject: {}", to, subject);
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(fromEmail);
+            message.setTo(to);
+            message.setSubject(subject);
+            message.setText(body);
+            mailSender.send(message);
+            log.info("Email sent successfully to: {}", to);
+        } catch (MailException e) {
+            log.error("Email failed to: {} | Error: {}", to, e.getMessage(), e);
+        }
+    }
+
+    // ==========================================
+    // MAYANK'S ATTENDANCE & TIMESHEET EMAILS
+    // ==========================================
+    @Override
+    @Async
+    public void notifyManagerForNewLeave(Employee employee, Leave leave) {
+        Employee manager = employee.getManager();
+        if (manager == null || manager.getEmail() == null || manager.getEmail().isBlank()) return;
+
+        String subject = "New Leave Request - " + employee.getFirstName() + " " + employee.getLastName();
+        String body = "Hello " + manager.getFirstName() + ",\n\n"
+                + employee.getFirstName() + " " + employee.getLastName() + " has applied for leave.\n\n"
+                + "Type: " + leave.getLeaveType() + "\n"
+                + "Dates: " + leave.getStartDate() + " to " + leave.getEndDate() + "\n"
+                + "Days: " + leave.getTotalDays() + "\n"
+                + "Reason: " + leave.getReasonForLeave() + "\n"
+                + "Status: " + leave.getStatus() + "\n\n"
+                + "Please review it in the portal.";
+        sendPlainText(manager.getEmail(), subject, body);
+    }
 
     @Override
-    public void sendAllocationEmail(String to, String name, String company, String dept, String project) {
+    @Async
+    public void notifyEmployeeForLeaveDecision(Employee employee, Leave leave) {
+        if (employee.getEmail() == null || employee.getEmail().isBlank()) return;
 
+        String subject = "Leave Request " + leave.getStatus();
+        String body = "Hello " + employee.getFirstName() + ",\n\n"
+                + "Your leave request has been " + leave.getStatus() + ".\n\n"
+                + "Type: " + leave.getLeaveType() + "\n"
+                + "Dates: " + leave.getStartDate() + " to " + leave.getEndDate() + "\n"
+                + "Days: " + leave.getTotalDays() + "\n"
+                + (leave.getStatus().name().equals("REJECTED")
+                ? "Reason: " + (leave.getRejectionReason() == null ? "" : leave.getRejectionReason()) + "\n"
+                : "")
+                + "\nRegards,\nHR Team";
+        sendPlainText(employee.getEmail(), subject, body);
+    }
+
+    @Override
+    @Async
+    public void notifyManagerForCancellationRequest(Employee employee, Leave leave) {
+        Employee manager = employee.getManager();
+        if (manager == null || manager.getEmail() == null || manager.getEmail().isBlank()) return;
+
+        String subject = "Leave Cancellation Request - " + employee.getFirstName() + " " + employee.getLastName();
+        String body = "Hello " + manager.getFirstName() + ",\n\n"
+                + employee.getFirstName() + " " + employee.getLastName()
+                + " has requested cancellation of an approved leave.\n\n"
+                + "Type: " + leave.getLeaveType() + "\n"
+                + "Dates: " + leave.getStartDate() + " to " + leave.getEndDate() + "\n"
+                + "Days: " + leave.getTotalDays() + "\n"
+                + "Current Status: " + leave.getStatus() + "\n\n"
+                + "Please review the cancellation request in the portal.";
+        sendPlainText(manager.getEmail(), subject, body);
+    }
+
+    @Override
+    @Async
+    public void notifyEmployeeForCancellationDecision(Employee employee, Leave leave, ApprovalStatus decision, String reason) {
+        if (employee.getEmail() == null || employee.getEmail().isBlank()) return;
+
+        String subject = "Leave Cancellation Request " + leave.getStatus();
+        String body = "Hello " + employee.getFirstName() + ",\n\n"
+                + "Your leave cancellation request has been " + leave.getStatus() + ".\n\n"
+                + "Type: " + leave.getLeaveType() + "\n"
+                + "Dates: " + leave.getStartDate() + " to " + leave.getEndDate() + "\n"
+                + "Days: " + leave.getTotalDays() + "\n"
+                + (decision == ApprovalStatus.REJECTED ? "Reason: " + (reason == null ? "" : reason) + "\n" : "")
+                + "\nRegards,\nHR Team";
+        sendPlainText(employee.getEmail(), subject, body);
+    }
+
+    @Override
+    @Async
+    public void notifyManagerForNewRegularization(Employee employee, RegularizationRequest regularizationRequest) {
+        Employee manager = employee.getManager();
+        if (manager == null || manager.getEmail() == null || manager.getEmail().isBlank()) return;
+
+        String subject = "New Regularization Request - " + employee.getFirstName() + " " + employee.getLastName();
+        String body = "Hello " + manager.getFirstName() + ",\n\n"
+                + employee.getFirstName() + " " + employee.getLastName() + " has applied for regularization.\n\n"
+                + "Date: " + regularizationRequest.getDate() + "\n"
+                + "Punch In: " + regularizationRequest.getPunchInTime() + "\n"
+                + "Punch Out: " + regularizationRequest.getPunchOutTime() + "\n"
+                + "Reason: " + regularizationRequest.getReason() + "\n"
+                + "Status: " + regularizationRequest.getStatus() + "\n\n"
+                + "Please review it in the portal.";
+        sendPlainText(manager.getEmail(), subject, body);
+    }
+
+    @Override
+    @Async
+    public void notifyEmployeeForRegularizationDecision(Employee employee, RegularizationRequest regularizationRequest) {
+        if (employee.getEmail() == null || employee.getEmail().isBlank()) return;
+
+        String subject = "Regularization Request " + regularizationRequest.getStatus();
+        String body = "Hello " + employee.getFirstName() + ",\n\n"
+                + "Your regularization request has been " + regularizationRequest.getStatus() + ".\n\n"
+                + "Date: " + regularizationRequest.getDate() + "\n"
+                + "Punch In: " + regularizationRequest.getPunchInTime() + "\n"
+                + "Punch Out: " + regularizationRequest.getPunchOutTime() + "\n"
+                + "Reason: " + regularizationRequest.getReason() + "\n"
+                + (regularizationRequest.getStatus().name().equals("REJECTED")
+                ? "Reason for Rejection: "
+                + (regularizationRequest.getRejectionReason() == null ? "" : regularizationRequest.getRejectionReason()) + "\n"
+                : "")
+                + "\nRegards,\nHR Team";
+        sendPlainText(employee.getEmail(), subject, body);
+    }
+
+    @Override
+    @Async
+    public void notifyManagerForTimesheetSubmission(Employee employee, Timesheet timesheet) {
+        Employee manager = employee.getManager();
+        if (manager == null || manager.getEmail() == null || manager.getEmail().isBlank()) return;
+
+        String subject = "Timesheet Submitted - " + employee.getFirstName() + " " + employee.getLastName();
+        String body = "Hello " + manager.getFirstName() + ",\n\n"
+                + employee.getFirstName() + " " + employee.getLastName() + " has submitted a timesheet.\n\n"
+                + "Month/Year: " + timesheet.getMonth() + "/" + timesheet.getYear() + "\n"
+                + "Total Hours: " + timesheet.getTotalMonthlyMinutes()/60 + "\n"
+                + "Status: " + timesheet.getStatus() + "\n\n"
+                + "Please review it in the portal.";
+        sendPlainText(manager.getEmail(), subject, body);
+    }
+
+    @Override
+    @Async
+    public void notifyEmployeeForTimesheetDecision(Employee employee, Timesheet timesheet) {
+        if (employee.getEmail() == null || employee.getEmail().isBlank()) return;
+
+        String subject = "Timesheet " + timesheet.getStatus();
+        String body = "Hello " + employee.getFirstName() + ",\n\n"
+                + "Your timesheet has been " + timesheet.getStatus() + ".\n\n"
+                + "Month/Year: " + timesheet.getMonth() + "/" + timesheet.getYear() + "\n"
+                + "Total Hours: " + timesheet.getTotalMonthlyMinutes()/60 + "\n"
+                + (timesheet.getStatus().name().equals("REJECTED")
+                ? "Reason: " + (timesheet.getRejectionReason() == null ? "" : timesheet.getRejectionReason()) + "\n"
+                : "")
+                + "\nRegards,\nHR Team";
+        sendPlainText(employee.getEmail(), subject, body);
+    }
+
+    // ==========================================
+    // YATIN'S NOTIFICATION EMAILS
+    // ==========================================
+    @Override
+    public void sendAllocationEmail(String to, String name, String company, String dept, String project) {
         send(to, "FinSecure — You have been assigned",
                 "Dear " + name + ",\n\n"
                         + "You have been assigned to:\n"
@@ -69,9 +254,7 @@ public class EmailServiceImpl implements EmailService{
     }
 
     @Override
-    public void sendStaleEscalationAlert(String to, Long escalationId,
-                                         String targetName, String targetEmail,
-                                         long daysOpen) {
+    public void sendStaleEscalationAlert(String to, Long escalationId, String targetName, String targetEmail, long daysOpen) {
         send(to,
                 "FinSecure — URGENT: Escalation SLA Breached (#" + escalationId + ")",
                 "This is an automated alert.\n\n"
@@ -85,9 +268,7 @@ public class EmailServiceImpl implements EmailService{
     }
 
     @Override
-    public void sendSalaryCreditEmail(String toEmail, String employeeName,
-                                      String month, double netSalary, String maskedAccount) {
-
+    public void sendSalaryCreditEmail(String toEmail, String employeeName, String month, double netSalary, String maskedAccount) {
         send(toEmail,
                 "Salary Credited — " + month,
                 "Dear " + employeeName + ",\n\n"
@@ -98,13 +279,7 @@ public class EmailServiceImpl implements EmailService{
     }
 
     @Override
-    public void sendSalaryJobCompletedEmail(String toEmail,
-                                            String jobName,
-                                            int total,
-                                            int success,
-                                            int failed,
-                                            int skipped) {
-
+    public void sendSalaryJobCompletedEmail(String toEmail, String jobName, int total, int success, int failed, int skipped) {
         send(toEmail,
                 "Salary Job Completed — " + jobName,
                 "Salary Job: " + jobName + " completed.\n\n"
@@ -116,14 +291,7 @@ public class EmailServiceImpl implements EmailService{
     }
 
     @Override
-    public void sendFraudAlertEmailToEmployee(String toEmail,
-                                              String subject,
-                                              Long id,
-                                              String firstName,
-                                              String lastName,
-                                              Integer modifiedAttempted,
-                                              LocalDateTime coolDownPeriod) {
-
+    public void sendFraudAlertEmailToEmployee(String toEmail, String subject, Long id, String firstName, String lastName, Integer modifiedAttempted, LocalDateTime coolDownPeriod) {
         send(toEmail,
                 " Suspicious Bank Account Activity Detected",
                 "Employee ID: " + id + "\n"
@@ -134,13 +302,7 @@ public class EmailServiceImpl implements EmailService{
     }
 
     @Override
-    public void sendFraudAlertEmailToFinance(String toEmail,
-                                             Long id,
-                                             String firstName,
-                                             String lastName,
-                                             Integer modifiedAttempted,
-                                             LocalDateTime coolDownPeriod) {
-
+    public void sendFraudAlertEmailToFinance(String toEmail, Long id, String firstName, String lastName, Integer modifiedAttempted, LocalDateTime coolDownPeriod) {
         send(toEmail,
                 " Fraud Monitoring Alert – Bank Account Change Activity",
                 "Fraud monitoring systems have detected unusual activity related to bank account modifications.\n\n"
@@ -153,5 +315,68 @@ public class EmailServiceImpl implements EmailService{
                         + "Action Required:\n"
                         + "Please review this activity for potential fraud risk.\n\n"
                         + "This is a system-generated alert.");
+    }
+
+    // ==========================================
+    // SAURABH'S TRAINING & CERTIFICATION EMAILS
+    // ==========================================
+    @Override
+    public void sendEnrollmentEmail(String to, String employeeName, String trainingName) {
+        log.info("Preparing enrollment email for employee: {}", employeeName);
+        String subject = "Enrolled in Training: " + trainingName;
+        String body = "Dear " + employeeName + ",\n\n"
+                + "You have been enrolled in the following training:\n"
+                + "Training : " + trainingName + "\n\n"
+                + "Please login to dashboard.\n\n"
+                + "Regards,\nFinSecure HR Team";
+        sendEmail(to, subject, body);
+    }
+
+    @Override
+    public void sendTrainingStartEmail(String to, String employeeName, String trainingName, String startDate) {
+        log.info("Preparing training start email for: {}", employeeName);
+        String subject = "Training Started: " + trainingName;
+        String body = "Dear " + employeeName + ",\n\n"
+                + "Your training has started.\n"
+                + "Training: " + trainingName + "\n"
+                + "Start Date: " + startDate + "\n\n"
+                + "Regards,\nFinSecure HR Team";
+        sendEmail(to, subject, body);
+    }
+
+    @Override
+    public void sendTrainingCompleteEmail(String to, String employeeName, String trainingName) {
+        log.info("Preparing training completion email for: {}", employeeName);
+        String subject = "Training Completed: " + trainingName;
+        String body = "Dear " + employeeName + ",\n\n"
+                + "Your training is completed.\n"
+                + "Training: " + trainingName + "\n\n"
+                + "Upload certification.\n\n"
+                + "Regards,\nFinSecure HR Team";
+        sendEmail(to, subject, body);
+    }
+
+    @Override
+    public void sendCertUploadEmail(String hrEmail, String employeeName, String certName) {
+        log.info("Sending certification upload email to HR for employee: {}", employeeName);
+        String subject = "Certification Uploaded — " + employeeName;
+        String body = "Dear HR,\n\n"
+                + employeeName + " uploaded certification:\n"
+                + certName + "\n\n"
+                + "Please verify.\n\n"
+                + "FinSecure System";
+        sendEmail(hrEmail, subject, body);
+    }
+
+    @Override
+    public void sendCertVerificationEmail(String to, String employeeName, String certName) {
+        log.info("Sending certification verification email to: {}", employeeName);
+        String subject = "Certification Verified — " + certName;
+        String body = "Dear " + employeeName + ",\n\n"
+                + "Your certification is verified.\n"
+                + "Certificate: " + certName + "\n\n"
+                + "You are eligible for projects.\n\n"
+                + "FinSecure HR Team";
+        sendEmail(to, subject, body);
     }
 }
