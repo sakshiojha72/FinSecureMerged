@@ -22,6 +22,7 @@ public class CompanyServiceImpl implements CompanyService {
     @Autowired private iCompanyRepository companyRepo;
 
     //  entity → response DTO---------
+    
     public CompanyResponseDTO toResponse(Company c) {
         CompanyResponseDTO res = new CompanyResponseDTO();
         res.setId(c.getId());
@@ -33,6 +34,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     // -- create-------------------
+    @Override
     public CompanyResponseDTO create(CompanyRequestDTO req) {
         if (companyRepo.existsByCode(req.getCode()))
             throw new HrDuplicateResourceException("Company","Code",req.getCode());
@@ -48,6 +50,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     //update-----------------
+    @Override
     public CompanyResponseDTO update(Long id, CompanyRequestDTO req) {
         Company company = findOrThrow(id);
         if (req.getName()               != null) company.setName(req.getName());
@@ -58,6 +61,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     // ---- get all ---------------------
+    @Override
     public List<CompanyResponseDTO> getAll() {
         return companyRepo.findAll().stream()
                 .map(this::toResponse)
@@ -65,12 +69,14 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     // ---- get by id -----------------------
+    @Override
     public CompanyResponseDTO getById(Long id) {
         return toResponse(findOrThrow(id));
     }
 
     
     //update status-------------------------------
+    @Override
     public CompanyResponseDTO updateStatus(Long id, String status) {
         if (!status.equals("ACTIVE") && !status.equals("INACTIVE"))
             throw new HrException("Status must be ACTIVE or INACTIVE");
@@ -80,6 +86,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     // ---- internal helper — returns raw entity for other services ------------─
+    @Override
     public Company findOrThrow(Long id) {
         return companyRepo.findById(id)
                 .orElseThrow(() -> new HrResourceNotFoundException("Company " , id));

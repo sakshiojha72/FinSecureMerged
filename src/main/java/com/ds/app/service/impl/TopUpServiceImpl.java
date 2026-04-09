@@ -12,10 +12,12 @@ import com.ds.app.dto.request.CreateTopUpPlanRequestDTO;
 import com.ds.app.dto.response.EmployeeTopUpResponseDTO;
 import com.ds.app.dto.response.TopUpPlanResponseDTO;
 import com.ds.app.entity.Employee;
-import com.ds.app.entity.EmployeeInsurance;
 import com.ds.app.entity.EmployeeTopUp;
 import com.ds.app.entity.TopUpPlan;
 import com.ds.app.enums.InsuranceStatus;
+import com.ds.app.exception.BusinessRuleException;
+import com.ds.app.exception.ConflictException;
+import com.ds.app.exception.ResourceNotFoundException;
 import com.ds.app.repository.EmployeeInsuranceRepository;
 import com.ds.app.repository.EmployeeRepository;
 import com.ds.app.repository.EmployeeTopUpRepository;
@@ -23,33 +25,30 @@ import com.ds.app.repository.TopUpPlanRepository;
 import com.ds.app.service.TopUpService;
 
 @Service
-public class TopUpServiceImpl implements TopUpService{
+public class TopUpServiceImpl implements TopUpService {
 
-	@Autowired
-	private TopUpPlanRepository topUpPlanRepository;
-	
-	@Autowired
-	private EmployeeTopUpRepository employeeTopUpRepository;
-	
-	@Autowired
-	private EmployeeRepository employeeRepository;
-	
-	@Autowired
-	private EmployeeInsuranceRepository employeeInsuranceRepository;
-	
-	
-	
-	@Override
-	public TopUpPlanResponseDTO createTopUpPlan(CreateTopUpPlanRequestDTO dto, String createdBy) {
+    @Autowired
+    private TopUpPlanRepository topUpPlanRepository;
 
-		//1. no duplicate top up 
-		if(topUpPlanRepository.existsByTopUpName(dto.getTopUpName()))
-		{
-			throw new RuntimeException(
-					"Top-up plan with this name already exists");
-		}
-		
-		TopUpPlan topUp= new TopUpPlan();
+    @Autowired
+    private EmployeeTopUpRepository employeeTopUpRepository;
+
+    @Autowired
+    private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private EmployeeInsuranceRepository employeeInsuranceRepository;
+
+    @Override
+    public TopUpPlanResponseDTO createTopUpPlan(
+            CreateTopUpPlanRequestDTO dto, String createdBy) {
+
+        if (topUpPlanRepository.existsByTopUpName(dto.getTopUpName())) {
+            throw new ConflictException(
+                    "Top-up plan with this name already exists");
+        }
+
+        TopUpPlan topUp = new TopUpPlan();
         topUp.setTopUpName(dto.getTopUpName());
         topUp.setAdditionalCoverage(dto.getAdditionalCoverage());
         topUp.setPrice(dto.getPrice());
@@ -59,64 +58,54 @@ public class TopUpServiceImpl implements TopUpService{
 
         TopUpPlan saved = topUpPlanRepository.save(topUp);
         return mapToTopUpPlanResponse(saved);
+    }
 
-	}
+    @Override
+    public List<TopUpPlanResponseDTO> getAllTopUpPlans() {
+        return topUpPlanRepository.findByIsActiveTrue()
+                .stream()
+                .map(this::mapToTopUpPlanResponse)
+                .collect(Collectors.toList());
+    }
 
-	@Override
-	public List<TopUpPlanResponseDTO> getAllTopUpPlans() {
-		 return topUpPlanRepository.findByIsActiveTrue()
-	                .stream()
-	                .map(this::mapToTopUpPlanResponse)
-	                .collect(Collectors.toList());
-	}
-
-	@Override
-	public void deactivateTopUpPlan(Long topUpPlanId) {
+    @Override
+    public void deactivateTopUpPlan(Long topUpPlanId) {
         TopUpPlan topUp = topUpPlanRepository.findById(topUpPlanId)
-                .orElseThrow(() -> new RuntimeException(
-                    "Top-up plan not found with id: " + topUpPlanId
-                ));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Top-up plan not found with id: " + topUpPlanId));
 
-        // soft delete
         topUp.setIsActive(false);
         topUpPlanRepository.save(topUp);
+    }
 
-	}
+    @Override
+    public EmployeeTopUpResponseDTO buyTopUp(BuyTopUpRequestDTO dto, Long employeeId) {
 
-	@Override
-	public EmployeeTopUpResponseDTO buyTopUp(BuyTopUpRequestDTO dto, Long employeeId) {
-		
-		//1. employee must exist
-		Employee employee= employeeRepository.findById(employeeId)
-				.orElseThrow(()-> new RuntimeException(
-						"Employee not found"));
-		//2. top up plan must exist 
-		TopUpPlan topUpPlan = topUpPlanRepository.findById(dto.getTopUpPlanId())
-				.orElseThrow(()-> new RuntimeException(
-						"Top up plan not found"));
-		//3. top up plan must be active
-		if(!topUpPlan.getIsActive())
-		{
-			throw new RuntimeException(
-					"This top-Up plan is no longer available for purchase");
-		}
-		
-		//4. emp must have an active base insurance
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Employee not found"));
+
+        TopUpPlan topUpPlan = topUpPlanRepository.findById(dto.getTopUpPlanId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Top-up plan not found"));
+
+        if (!topUpPlan.getIsActive()) {
+            throw new BusinessRuleException(
+                    "This top-up plan is no longer available for purchase");
+        }
+
         if (!employeeInsuranceRepository.existsByEmployee_UserIdAndStatus(
                 employeeId, InsuranceStatus.ACTIVE)) {
-            throw new RuntimeException(
-                "Employee must have an active base insurance before buying a top-up"
-            );
+            throw new BusinessRuleException(
+                    "Employee must have an active base insurance before buying a top-up");
         }
-       
-        //5. employee can't buy same topUp twice
-        if(employeeTopUpRepository.existsByEmployee_UserIdAndTopUpPlan_Id(employeeId, dto.getTopUpPlanId()))
-        {
-        	throw new RuntimeException(
-        			"Employee has already purchased this top-up plan");
+
+        if (employeeTopUpRepository.existsByEmployee_UserIdAndTopUpPlan_Id(
+                employeeId, dto.getTopUpPlanId())) {
+            throw new ConflictException(
+                    "Employee has already purchased this top-up plan");
         }
-        
-        //all checks passed
+
         EmployeeTopUp purchase = new EmployeeTopUp();
         purchase.setEmployee(employee);
         purchase.setTopUpPlan(topUpPlan);
@@ -125,21 +114,17 @@ public class TopUpServiceImpl implements TopUpService{
         purchase.setStatus(InsuranceStatus.ACTIVE);
 
         EmployeeTopUp saved = employeeTopUpRepository.save(purchase);
-        return mapToTopUpResponse(saved);	
-	}
+        return mapToTopUpResponse(saved);
+    }
 
-	@Override
-	public List<EmployeeTopUpResponseDTO> getEmployeeTopUps(Long employeeId) {
-      //full topUp history
-		return employeeTopUpRepository.findByEmployee_UserId(employeeId)
+    @Override
+    public List<EmployeeTopUpResponseDTO> getEmployeeTopUps(Long employeeId) {
+        return employeeTopUpRepository.findByEmployee_UserId(employeeId)
                 .stream()
                 .map(this::mapToTopUpResponse)
                 .collect(Collectors.toList());
+    }
 
-	}
-	
-	//MAPPERS- entity to repsonse
-	
     private TopUpPlanResponseDTO mapToTopUpPlanResponse(TopUpPlan plan) {
         TopUpPlanResponseDTO dto = new TopUpPlanResponseDTO();
         dto.setTopUpPlanId(plan.getId());
@@ -152,16 +137,21 @@ public class TopUpServiceImpl implements TopUpService{
         return dto;
     }
 
-    private EmployeeTopUpResponseDTO mapToTopUpResponse(
-            EmployeeTopUp topUp) {
+    private EmployeeTopUpResponseDTO mapToTopUpResponse(EmployeeTopUp topUp) {
         EmployeeTopUpResponseDTO dto = new EmployeeTopUpResponseDTO();
         dto.setEmployeeTopUpId(topUp.getId());
         dto.setEmployeeId(topUp.getEmployee().getUserId());
-        dto.setEmployeeName(topUp.getEmployee().getFirstName()+" "+topUp.getEmployee().getLastName());
-        dto.setTopUpName(topUp.getTopUpPlan().getTopUpName());
-        dto.setAdditionalCoverage(
-            topUp.getTopUpPlan().getAdditionalCoverage()
+
+        String firstName = topUp.getEmployee().getFirstName();
+        String lastName  = topUp.getEmployee().getLastName();
+        dto.setEmployeeName(
+            (firstName != null && !firstName.isBlank() && lastName != null && !lastName.isBlank())
+                ? firstName + " " + lastName
+                : topUp.getEmployee().getUsername()
         );
+
+        dto.setTopUpName(topUp.getTopUpPlan().getTopUpName());
+        dto.setAdditionalCoverage(topUp.getTopUpPlan().getAdditionalCoverage());
         dto.setPrice(topUp.getTopUpPlan().getPrice());
         dto.setPurchasedDate(topUp.getPurchasedDate());
         dto.setExpiryDate(topUp.getExpiryDate());
@@ -169,6 +159,4 @@ public class TopUpServiceImpl implements TopUpService{
         dto.setCreatedAt(topUp.getCreatedAt());
         return dto;
     }
-
-
 }

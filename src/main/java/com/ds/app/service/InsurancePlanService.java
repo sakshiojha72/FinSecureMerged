@@ -13,6 +13,7 @@ import com.ds.app.dto.response.EmployeeTopUpResponseDTO;
 import com.ds.app.dto.response.InsurancePlanResponseDTO;
 import com.ds.app.dto.response.TopUpPlanResponseDTO;
 import com.ds.app.enums.ClaimStatus;
+import com.ds.app.exception.ResourceNotFoundException;
 
 public interface InsurancePlanService {
 		
@@ -23,12 +24,12 @@ public interface InsurancePlanService {
 	List<InsurancePlanResponseDTO> getAllInsurancePlans();
 	
 	//admin can soft delete a plan ( will set isActive-F)
-	void deactivateInsurancePlan(Long planId);
+	void deactivateInsurancePlan(Long planId) throws ResourceNotFoundException;
 	
 	//admin assign plan to employee
-	EmployeeInsuranceResponseDTO assignInsurance(AssignInsuranceRequestDTO dto);
+	EmployeeInsuranceResponseDTO assignInsurance(AssignInsuranceRequestDTO dto) throws ResourceNotFoundException;
 	
-	EmployeeInsuranceResponseDTO getEmployeeInsurance(Long employeeId);
+	EmployeeInsuranceResponseDTO getEmployeeInsurance(Long employeeId) throws ResourceNotFoundException;
 	
 	
 	
