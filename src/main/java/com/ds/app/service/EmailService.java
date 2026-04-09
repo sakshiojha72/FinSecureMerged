@@ -2,7 +2,28 @@ package com.ds.app.service;
 
 import java.time.LocalDateTime;
 
+import com.ds.app.entity.Employee;
+import com.ds.app.entity.Leave;
+import com.ds.app.entity.RegularizationRequest;
+import com.ds.app.entity.Timesheet;
+import com.ds.app.enums.ApprovalStatus;
+
 public interface EmailService {
+	
+	void sendPlainText(String to, String subject, String body);
+	
+	void notifyManagerForNewLeave(Employee employee, Leave leave);
+    void notifyEmployeeForLeaveDecision(Employee employee, Leave leave);
+    void notifyManagerForCancellationRequest(Employee employee, Leave leave);
+    void notifyEmployeeForCancellationDecision(Employee employee, Leave leave, ApprovalStatus decision, String reason);
+
+    // Regularization
+    void notifyManagerForNewRegularization(Employee employee, RegularizationRequest regularizationRequest);
+    void notifyEmployeeForRegularizationDecision(Employee employee, RegularizationRequest regularizationRequest);
+
+    // Timesheet
+    void notifyManagerForTimesheetSubmission(Employee employee, Timesheet timesheet);
+    void notifyEmployeeForTimesheetDecision(Employee employee, Timesheet timesheet);
 
     void sendAllocationEmail(String to, String name, String company, String dept, String project);
 
