@@ -3,7 +3,6 @@ package com.ds.app.entity;
 import com.ds.app.enums.CertificationStatus;
 import com.ds.app.enums.EmployeeExperience;
 import com.ds.app.enums.Status;
-import com.ds.app.enums.UserRole;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.CascadeType;
@@ -17,19 +16,55 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true)
 @PrimaryKeyJoinColumn(name = "user_id")
+@EqualsAndHashCode(
+    callSuper = true,
+    exclude = {
+        "insurances",
+        "topUps",
+        "insuranceClaims",
+        "company",
+        "department",
+        "project",
+        "bankAccount",
+        "investments",
+        "cards",
+        "salaryRecords",
+        "escalations",
+        "appraisals"
+    }
+)
+@ToString(
+    callSuper = true,
+    exclude = {
+        "insurances",
+        "topUps",
+        "insuranceClaims",
+        "company",
+        "department",
+        "project",
+        "bankAccount",
+        "investments",
+        "cards",
+        "salaryRecords",
+        "escalations",
+        "appraisals"
+    }
+)
 public class Employee extends AppUser {
 
     @Column(unique = true)
@@ -53,17 +88,17 @@ public class Employee extends AppUser {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Status status = Status.ACTIVE; // ACTIVE / INACTIVE / TERMINATED
+    private Status status = Status.ACTIVE;
 
     private Boolean isDeleted = Boolean.FALSE;
 
     @Enumerated(EnumType.STRING)
-    private EmployeeExperience employeeExperience; // FRESHER / EXPERIENCED
+    private EmployeeExperience employeeExperience;
 
     @Enumerated(EnumType.STRING)
     private CertificationStatus certificationStatus;
 
-   
+    /* ===================== Relationships ===================== */
 
     @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
     private List<EmployeeInsurance> insurances;
@@ -77,28 +112,27 @@ public class Employee extends AppUser {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id")
     @JsonIgnoreProperties({
-            "employees", "departments", "projects",
-            "hibernateLazyInitializer", "handler"
+        "employees", "departments", "projects",
+        "hibernateLazyInitializer", "handler"
     })
     private Company company;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id")
     @JsonIgnoreProperties({
-            "employees", "projects", "company",
-            "hibernateLazyInitializer", "handler"
+        "employees", "projects", "company",
+        "hibernateLazyInitializer", "handler"
     })
     private Department department;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     @JsonIgnoreProperties({
-            "assignedEmployees", "company", "department",
-            "hibernateLazyInitializer", "handler"
+        "assignedEmployees", "company", "department",
+        "hibernateLazyInitializer", "handler"
     })
     private Project project;
 
-   
     @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private EmployeeBankAccount bankAccount;
@@ -115,7 +149,6 @@ public class Employee extends AppUser {
     @JsonIgnore
     private List<SalaryRecord> salaryRecords;
 
-    // cascade = MERGE only — avoid deleting escalation/appraisal history accidentally
     @OneToMany(mappedBy = "targetEmployee", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Escalation> escalations = new ArrayList<>();
@@ -124,8 +157,7 @@ public class Employee extends AppUser {
     @JsonIgnore
     private List<Appraisal> appraisals = new ArrayList<>();
 
-    
-
+    /* ===================== Convenience Getters ===================== */
     public Long getCompanyId() {
         return company != null ? company.getId() : null;
     }
@@ -137,20 +169,4 @@ public class Employee extends AppUser {
     public Long getProjectId() {
         return project != null ? project.getId() : null;
     }
-
-   
-
-//    public Employee(String username,
-//                    String password,
-//                    Boolean isAccountLocked,
-//                    UserRole role,
-//                    String firstName,
-//                    String lastName,
-//                    String employeeCode) {
-//
-//        super(username, password, isAccountLocked, role);
-//        this.firstName = firstName;
-//        this.lastName = lastName;
-//        this.employeeCode = employeeCode;
-//    }
 }

@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 
-@Component
+//@Component
 public class DataLoader implements CommandLineRunner {
 
 
