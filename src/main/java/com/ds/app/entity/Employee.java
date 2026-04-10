@@ -2,6 +2,8 @@ package com.ds.app.entity;
 
 import com.ds.app.enums.CertificationStatus;
 import com.ds.app.enums.EmployeeExperience;
+import com.ds.app.enums.EmploymentType;
+import com.ds.app.enums.Gender;
 import com.ds.app.enums.SkillStatus;
 import com.ds.app.enums.Status;
 
@@ -19,8 +21,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.PrimaryKeyJoinColumn;
-
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,6 +36,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,6 +65,23 @@ public class Employee extends AppUser {
 
 	@Column(nullable = false)
 	private String email;
+	
+	@Column(nullable = true, unique = true, length = 10)
+    private String phoneNumber;
+	
+
+    @Column(nullable = true)
+    private LocalDate dateOfBirth;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = true, length = 20)
+    private Gender gender;
+    
+    private String designation; 
+    
+
+    @Enumerated(EnumType.STRING)
+    private EmploymentType employmentType; 
 
 	private Boolean isEscalated = Boolean.FALSE;
 
@@ -66,6 +89,33 @@ public class Employee extends AppUser {
 	private Double currentSalary = 0.0;
 
 	private LocalDate joiningDate;
+	
+	 @Column(nullable = true, length = 255)
+	 private String addressLine;
+
+	 @Column(nullable = true, length = 100)
+	 private String city;
+
+	 @Column(nullable = true, length = 100)
+	 private String state;
+
+	 @Column(nullable = true, length = 100)
+	 private String country;
+
+	 @Column(nullable = true, length = 6)
+	 private String pincode;
+	 
+	 @Size(max = 255, message = "Profile photo URL is too long")
+	 @Column(length = 255)
+	 private String profilePhotoUrl;
+	 
+	 @Column(nullable = false, updatable = false)
+	 private LocalDateTime createdAt; 
+
+	 @Column(nullable = false)
+	 private LocalDateTime updatedAt;
+	   
+	    
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -223,5 +273,28 @@ public class Employee extends AppUser {
 		this.lastName = lastName;
 		this.employeeCode = employeeCode;
 	}
+	
+	//================Changes made by Khushi =================//
+	
+	 @PrePersist
+	 public void prePersist() {
+	      this.createdAt = LocalDateTime.now();
+	      this.updatedAt = LocalDateTime.now();;
+	 }
+
+	 @PreUpdate
+	 public void preUpdate() {
+	     this.updatedAt = LocalDateTime.now();
+	 }
+	 
+	 @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	 private List<EmployeeDocument> documents;
+	 	
+	 @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	 private List<EmployeeEducation> educations;
+	 	
+	 @JsonIgnore
+	 @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch =FetchType.LAZY)
+	 private List<EmployeeReward> rewards;
 
 }
