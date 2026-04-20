@@ -2,8 +2,10 @@ package com.ds.app.entity;
 
 import com.ds.app.enums.CertificationStatus;
 import com.ds.app.enums.EmployeeExperience;
+import com.ds.app.enums.EmploymentType;
+import com.ds.app.enums.Gender;
+import com.ds.app.enums.SkillStatus;
 import com.ds.app.enums.Status;
-
 
 import com.ds.app.enums.UserRole;
 
@@ -19,11 +21,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.PrimaryKeyJoinColumn;
-
-
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
-
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,224 +36,265 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-
 @Getter
 @Setter
-
 @Data
-
 @NoArgsConstructor
+@AllArgsConstructor
 @PrimaryKeyJoinColumn(name = "user_id")
-@EqualsAndHashCode(
-    callSuper = true,
-    exclude = {
-        "insurances",
-        "topUps",
-        "insuranceClaims",
-        "company",
-        "department",
-        "project",
-        "bankAccount",
-        "investments",
-        "cards",
-        "salaryRecords",
-        "escalations",
-        "appraisals"
-    }
-)
-@ToString(
-    callSuper = true,
-    exclude = {
-        "insurances",
-        "topUps",
-        "insuranceClaims",
-        "company",
-        "department",
-        "project",
-        "bankAccount",
-        "investments",
-        "cards",
-        "salaryRecords",
-        "escalations",
-        "appraisals"
-    }
-)
+@EqualsAndHashCode(callSuper = true, exclude = { "insurances", "topUps", "insuranceClaims", "company", "department",
+		"project", "bankAccount", "investments", "cards", "salaryRecords", "escalations", "appraisals" })
+@ToString(callSuper = true, exclude = { "insurances", "topUps", "insuranceClaims", "company", "department", "project",
+		"bankAccount", "investments", "cards", "salaryRecords", "escalations", "appraisals" })
+@Builder
 public class Employee extends AppUser {
 
-    @Column(unique = true)
-    private String employeeCode;
+	@Column(unique = true)
+	private String employeeCode;
 
-    @Column(nullable = false)
-    private String firstName;
+	@Column(nullable = false)
+	private String firstName;
 
-    @Column(nullable = false)
-    private String lastName;
+	@Column(nullable = false)
+	private String lastName;
 
-    @Column(nullable = false)
+	@Column(nullable = false)
+	private String email;
+	
+	@Column(nullable = true, unique = true, length = 10)
+    private String phoneNumber;
+	
 
-    private String email ;
-
-  
-
-
-    private Boolean isEscalated = Boolean.FALSE;
-
-    @Column(nullable = false)
-    private Double currentSalary = 0.0;
-
-    private LocalDate joiningDate;
+    @Column(nullable = true)
+    private LocalDate dateOfBirth;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = true, length = 20)
+    private Gender gender;
+    
+    private String designation; 
+    
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Status status = Status.ACTIVE;
+    private EmploymentType employmentType; 
 
-    private Boolean isDeleted = Boolean.FALSE;
+	private Boolean isEscalated = Boolean.FALSE;
 
-    @Enumerated(EnumType.STRING)
-    private EmployeeExperience employeeExperience;
+	@Column(nullable = false)
+	private Double currentSalary = 0.0;
 
-    @Enumerated(EnumType.STRING)
-    private CertificationStatus certificationStatus;
+	private LocalDate joiningDate;
+	
+	 @Column(nullable = true, length = 255)
+	 private String addressLine;
 
-    /* ===================== Relationships ===================== */
+	 @Column(nullable = true, length = 100)
+	 private String city;
 
-    @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
-    private List<EmployeeInsurance> insurances;
+	 @Column(nullable = true, length = 100)
+	 private String state;
 
-    @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
-    private List<EmployeeTopUp> topUps;
+	 @Column(nullable = true, length = 100)
+	 private String country;
 
-    @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
-    private List<InsuranceClaim> insuranceClaims;
+	 @Column(nullable = true, length = 6)
+	 private String pincode;
+	 
+	 @Size(max = 255, message = "Profile photo URL is too long")
+	 @Column(length = 255)
+	 private String profilePhotoUrl;
+	 
+	 @Column(nullable = false, updatable = false)
+	 private LocalDateTime createdAt; 
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company_id")
-    @JsonIgnoreProperties({
-        "employees", "departments", "projects",
-        "hibernateLazyInitializer", "handler"
-    })
-    private Company company;
+	 @Column(nullable = false)
+	 private LocalDateTime updatedAt;
+	   
+	    
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "department_id")
-    @JsonIgnoreProperties({
-        "employees", "projects", "company",
-        "hibernateLazyInitializer", "handler"
-    })
-    private Department department;
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private Status status = Status.ACTIVE;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id")
-    @JsonIgnoreProperties({
-        "assignedEmployees", "company", "department",
-        "hibernateLazyInitializer", "handler"
-    })
-    private Project project;
+	private Boolean isDeleted = Boolean.FALSE;
 
-    @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
-    private EmployeeBankAccount bankAccount;
+	@Enumerated(EnumType.STRING)
+	private EmployeeExperience employeeExperience;
 
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<EmployeeInvestment> investments;
+	@Enumerated(EnumType.STRING)
+	private CertificationStatus certificationStatus;
 
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<EmployeeCard> cards;
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = true)
+	private SkillStatus skillStatus;
 
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<SalaryRecord> salaryRecords;
+	/* ===================== Relationships ===================== */
 
-    @OneToMany(mappedBy = "targetEmployee", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<Escalation> escalations = new ArrayList<>();
+	@OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
+	private List<EmployeeInsurance> insurances;
 
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<Appraisal> appraisals = new ArrayList<>();
+	@OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
+	private List<EmployeeTopUp> topUps;
 
-    
-    
- // ------------- Changes made for Tarushi Start -------------------------------
-    
-  //boolean isAssetEscalated=false; 
-  	@Column(name="has_active_asset_escalation",nullable=false)
-  	private Boolean hasActiveAssetEscalation=false;
-  	
-  	@OneToMany(mappedBy = "employee")
-  	private List<AssetAllocation> assetAllocations;
-      
-  	@OneToMany(mappedBy = "employee")
-      private List<AssetIssue> assetIssues;
-      
-  	
-  	@OneToMany(mappedBy = "employee")
-      private List<AssetEscalation> assetEscalations;
-  	
-  	
-     
+	@OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
+	private List<InsuranceClaim> insuranceClaims;
 
-  	public Boolean isHasActiveAssetEscalation() {
-  		return hasActiveAssetEscalation;
-  	}
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "company_id")
+	@JsonIgnoreProperties({ "employees", "departments", "projects", "hibernateLazyInitializer", "handler" })
+	private Company company;
 
-  	public void setHasActiveAssetEscalation(Boolean hasActiveAssetEscalation) {
-  		this.hasActiveAssetEscalation = hasActiveAssetEscalation;
-  	}
-    
-    
-    
- // ------------- Changes made for Tarushi END -------------------------------
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "department_id")
+	@JsonIgnoreProperties({ "employees", "projects", "company", "hibernateLazyInitializer", "handler" })
+	private Department department;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "project_id")
+	@JsonIgnoreProperties({ "assignedEmployees", "company", "department", "hibernateLazyInitializer", "handler" })
+	private Project project;
 
-    /* ===================== Convenience Getters ===================== */
-    public Long getCompanyId() {
-        return company != null ? company.getId() : null;
-    }
+	@OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonIgnore
+	private EmployeeBankAccount bankAccount;
 
-    public Long getDepartmentId() {
-        return department != null ? department.getId() : null;
-    }
+	@OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonIgnore
+	private List<EmployeeInvestment> investments;
 
-    public Long getProjectId() {
-        return project != null ? project.getId() : null;
-    }
+	@OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonIgnore
+	private List<EmployeeCard> cards;
 
-    
-    
- // ADD THIS CONSTRUCTOR inside Employee class
+	@OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonIgnore
+	private List<SalaryRecord> salaryRecords;
 
-    public Employee(String username,
-                    String password,
-                    boolean isDeleted,
-                    UserRole role,
-                    String firstName,
-                    String lastName,
-                    String employeeCode) {
+	@OneToMany(mappedBy = "targetEmployee", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+	@JsonIgnore
+	private List<Escalation> escalations = new ArrayList<>();
 
-        super(username, password, role);
+	@OneToMany(mappedBy = "employee", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+	@JsonIgnore
+	private List<Appraisal> appraisals = new ArrayList<>();
 
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.employeeCode = employeeCode;
-    }
+	// ---------------------------changes made by saurabh-----------------------
+	@OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<EmployeeTraining> employeeTrainings = new ArrayList<>();
+
+	@OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<Certification> certifications = new ArrayList<>();
+
+	// ------------- Changes made for Tarushi Start -------------------------------
+
+	// boolean isAssetEscalated=false;
+	@Column(name = "has_active_asset_escalation", nullable = false)
+	private Boolean hasActiveAssetEscalation = false;
+
+	@OneToMany(mappedBy = "employee")
+	private List<AssetAllocation> assetAllocations;
+
+	@OneToMany(mappedBy = "employee")
+	private List<AssetIssue> assetIssues;
+
+	@OneToMany(mappedBy = "employee")
+	private List<AssetEscalation> assetEscalations;
+
+	public Boolean isHasActiveAssetEscalation() {
+		return hasActiveAssetEscalation;
+	}
+
+	public void setHasActiveAssetEscalation(Boolean hasActiveAssetEscalation) {
+		this.hasActiveAssetEscalation = hasActiveAssetEscalation;
+	}
+
+	// ------------- Changes made for Tarushi END -------------------------------
+
+	// Attendance & Timesheet
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "manager_id")
+	@JsonIgnore
+	private Employee manager;
+
+	@OneToMany(mappedBy = "manager", fetch = FetchType.LAZY)
+	private List<Employee> assignedEmployees;
+
+	@OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
+	private List<Attendance> attendanceList;
+
+	@OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
+	private List<Leave> leaves;
+
+	@OneToMany(mappedBy = "approvedBy", fetch = FetchType.LAZY)
+	private List<Leave> approvedLeaves;
+
+	@OneToMany(mappedBy = "employee", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+	private List<LeaveBalance> leaveBalances;
+
+	@OneToMany(mappedBy = "employee", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+	private List<Timesheet> timesheets;
+
+	@OneToMany(mappedBy = "approvedBy", fetch = FetchType.LAZY)
+	private List<Timesheet> approvedTimeSheets;
+
+	@OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
+	private List<RegularizationRequest> regularizationRequests;
+
+	@OneToMany(mappedBy = "approvedBy", fetch = FetchType.LAZY)
+	private List<RegularizationRequest> approvedRegularizations;
+
+	/* ===================== Convenience Getters ===================== */
+	public Long getCompanyId() {
+		return company != null ? company.getId() : null;
+	}
+
+	public Long getDepartmentId() {
+		return department != null ? department.getId() : null;
+	}
+
+	public Long getProjectId() {
+		return project != null ? project.getId() : null;
+	}
+
+	// ADD THIS CONSTRUCTOR inside Employee class
+
+	public Employee(String username, String password, boolean isDeleted, UserRole role, String firstName,
+			String lastName, String employeeCode) {
+
+		super(username, password, role);
+
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.employeeCode = employeeCode;
+	}
+	
+	//================Changes made by Khushi =================//
+	
+	 @PrePersist
+	 public void prePersist() {
+	      this.createdAt = LocalDateTime.now();
+	      this.updatedAt = LocalDateTime.now();;
+	 }
+
+	 @PreUpdate
+	 public void preUpdate() {
+	     this.updatedAt = LocalDateTime.now();
+	 }
+	 
+	 @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	 private List<EmployeeDocument> documents;
+	 	
+	 @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	 private List<EmployeeEducation> educations;
+	 	
+	 @JsonIgnore
+	 @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch =FetchType.LAZY)
+	 private List<EmployeeReward> rewards;
 
 }
